@@ -186,15 +186,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 4. Push to the branch
 5. Create a Pull Request
 
-## 📞 Support
-
-For support and questions:
-- Email: support@fittrack.cyber
-- Phone: +1 (555) CYBER-FIT
-- Location: Night City, Cyberpunk District
 
 ---
 
-**Welcome to the future of fitness tracking. Experience the cyberpunk revolution.**
+**Welcome to the future of fitness tracking**
 
 
