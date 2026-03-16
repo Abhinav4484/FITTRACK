@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>FITTRACK — NUTRITION</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="cyberpunk.css" rel="stylesheet">
+  <style>
+    /* Page-specific styles */
+    .nutrition-header {
+      font-family: 'Audiowide', monospace;
+      font-weight: 400;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    
+    .nutrition-subtitle {
+      color: var(--cp-text-dim);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    
+    .nutrition-card {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+      border: 2px solid var(--cp-neon-cyan);
+      border-radius: 0;
+      padding: 2.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(15px);
+      box-shadow: 
+        0 0 40px rgba(0, 255, 255, 0.2),
+        inset 0 0 0 1px rgba(255, 0, 255, 0.1);
+      cursor: pointer;
+    }
+    
+    .nutrition-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan), var(--cp-neon-yellow));
+      animation: cyberpunkGlow 3s ease-in-out infinite;
+    }
+    
+    .nutrition-card:hover {
+      border-color: var(--cp-neon-pink);
+      box-shadow: 
+        0 0 60px rgba(255, 0, 255, 0.4),
+        inset 0 0 0 1px rgba(0, 255, 255, 0.2);
+      transform: translateY(-8px) scale(1.02);
+    }
+    
+    .nutrition-card:nth-child(1) { animation-delay: 0.4s; }
+    .nutrition-card:nth-child(2) { animation-delay: 0.6s; }
+    .nutrition-card:nth-child(3) { animation-delay: 0.8s; }
+    .nutrition-card:nth-child(4) { animation-delay: 1s; }
+    
+    .meal-title {
+      font-family: 'Audiowide', monospace;
+      font-size: 1.3rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    }
+    
+    .meal-macro {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.95rem;
+      color: var(--cp-neon-yellow);
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .meal-suggest {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem;
+      color: var(--cp-text-main);
+      line-height: 1.6;
+      user-select: text;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .nutrition-card:hover .meal-suggest {
+      color: var(--cp-text-main);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    .personalized-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, var(--cp-neon-green), var(--cp-neon-cyan));
+      color: var(--cp-bg-dark);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      border-radius: 0;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    }
+    
+    /* Bootup sequence - show only once */
+    .bootup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--cp-bg-darker);
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .bootup-overlay.show {
+      display: flex;
+      animation: bootupFadeOut 0.5s ease-out 3s forwards;
+    }
+    
+    .bootup-logo {
+      font-family: 'Audiowide', monospace;
+      font-size: 4rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 50px rgba(0, 255, 255, 0.8);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: bootupGlow 2s ease-in-out infinite;
+    }
+    
+    .bootup-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-neon-cyan);
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      animation: bootupPulse 1.5s ease-in-out infinite;
+    }
+    
+    .bootup-progress {
+      width: 300px;
+      height: 4px;
+      background: rgba(0, 255, 255, 0.2);
+      border-radius: 2px;
+      margin-top: 2rem;
+      overflow: hidden;
+    }
+    
+    .bootup-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      width: 0%;
+      animation: bootupProgress 3s ease-out forwards;
+    }
+    
+    @keyframes bootupGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255, 0, 255, 0.8)); }
+    }
+    
+    @keyframes bootupPulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes bootupProgress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    @keyframes bootupFadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Bootup Sequence - Hidden by default -->
+  <div class="bootup-overlay" id="bootupOverlay">
+    <div class="bootup-logo">FITTRACK</div>
+    <div class="bootup-subtitle">FITNESS TRACKING SYSTEM</div>
+    <div class="bootup-progress">
+      <div class="bootup-progress-bar"></div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row g-0">
+      <!-- Sidebar -->
+      <aside class="col-auto sidebar d-flex flex-column gap-3">
+        <div class="brand">
+          <div class="brand-logo">
+            <span>FT</span>
+          </div>
+          <div class="brand-text">
+            <h1 style="font-size: 1.6rem; white-space: nowrap;">FITTRACK</h1>
+
+            <p>FITNESS TRACKING SYSTEM</p>
+          </div>
+        </div>
+        <nav class="nav flex-column">
+          <a class="nav-link" href="index.html"><i class="bi bi-speedometer2"></i>Dashboard</a>
+          <a class="nav-link" href="workouts.html"><i class="bi bi-bar-chart-line"></i>Workouts</a>
+          <a class="nav-link active" href="nutrition.html"><i class="bi bi-basket"></i>Nutrition</a>
+          <a class="nav-link" href="progress.html"><i class="bi bi-graph-up"></i>Progress</a>
+          <a class="nav-link" href="profile.html"><i class="bi bi-person-circle"></i>Profile</a>
+          <a class="nav-link" href="settings.html"><i class="bi bi-gear"></i>Settings</a>
+          <a class="nav-link" href="details.html"><i class="bi bi-card-text"></i>Details</a>
+        </nav>
+      </aside>
+      
+      <!-- Main -->
+      <main class="col px-4 py-4">
+        <header class="mb-4">
+          <div>
+            <h2 class="nutrition-header">NUTRITION</h2>
+            <div class="nutrition-subtitle mb-2">Personalized meal plans based on your fitness profile</div>
+          </div>
+        </header>
+        
+        <!-- Personalized Badge -->
+        <div id="personalizedBadge" class="personalized-badge" style="display: none;">
+          <i class="bi bi-person-check me-2"></i>PERSONALIZED FOR YOU
+        </div>
+        
+        <div id="nutritionContent">
+          <!-- Content will be dynamically generated -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="cyberpunk-effects.js"></script>
+  <script>
+    // Bootup sequence - show only on first visit
+    if (!localStorage.getItem('fittrackFirstVisit')) {
+      document.getElementById('bootupOverlay').classList.add('show');
+      localStorage.setItem('fittrackFirstVisit', 'true');
+    }
+    
+    window.addEventListener('load', function() {
+      if (document.getElementById('bootupOverlay').classList.contains('show')) {
+        setTimeout(() => {
+          document.getElementById('bootupOverlay').style.display = 'none';
+        }, 3500);
+      }
+    });
+
+    // Highlight sidebar
+    const currentPage = window.location.pathname.split("/").pop() || 'index.html';
+    document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+      if (link.getAttribute("href") === currentPage) link.classList.add("active");
+    });
+
+    // Personalized Nutrition Plan Generator
+    function calculatePersonalizedDiet(age, weight, height, activityLevel) {
+      // Calculate BMI and BMR
+      const heightInMeters = height / 100;
+      const bmi = weight / (heightInMeters * heightInMeters);
+      
+      // BMR calculation (Harris-Benedict equation)
+      let bmr;
+      if (age >= 18) {
+        bmr = 10 * weight + 6.25 * height - 5 * age + (activityLevel === 'high' ? 5 : -161);
+      } else {
+        bmr = 10 * weight + 6.25 * height - 5 * age + (activityLevel === 'high' ? 5 : -161);
+      }
+      
+      // Adjust BMR based on activity level
+      let totalCalories;
+      switch(activityLevel) {
+        case 'sedentary':
+          totalCalories = bmr * 1.2;
+          break;
+        case 'moderate':
+          totalCalories = bmr * 1.5;
+          break;
+        case 'active':
+          totalCalories = bmr * 1.7;
+          break;
+        case 'high':
+          totalCalories = bmr * 2.0;
+          break;
+        default:
+          totalCalories = bmr * 1.4;
+      }
+      
+      // Calculate macros
+      const proteinGrams = Math.round(weight * 2.2); // 2.2g per kg
+      const proteinCalories = proteinGrams * 4;
+      const fatCalories = totalCalories * 0.25; // 25% from fat
+      const fatGrams = Math.round(fatCalories / 9);
+      const carbCalories = totalCalories - proteinCalories - fatCalories;
+      const carbGrams = Math.round(carbCalories / 4);
+      
+      // Determine meal plan based on BMI
+      let mealPlan;
+      if (bmi < 18.5) {
+        mealPlan = getMealPlan('underweight', totalCalories, proteinGrams, carbGrams);
+      } else if (bmi > 25) {
+        mealPlan = getMealPlan('overweight', totalCalories, proteinGrams, carbGrams);
+      } else {
+        mealPlan = getMealPlan('healthy', totalCalories, proteinGrams, carbGrams);
+      }
+      
+      return {
+        bmi: bmi.toFixed(1),
+        totalCalories: Math.round(totalCalories),
+        proteinGrams,
+        carbGrams,
+        fatGrams,
+        mealPlan
+      };
+    }
+    
+    function getMealPlan(type, calories, protein, carbs) {
+      const mealSize = Math.round(calories / 4); // Spread across 4 meals
+      
+      switch(type) {
+        case 'underweight':
+          return {
+            breakfast: {
+              calories: Math.round(mealSize * 1.2),
+              protein: Math.round(protein / 4 * 1.2),
+              carbs: Math.round(carbs / 4 * 1.2),
+              description: "High-protein breakfast: 3 eggs, whole grain toast with avocado, banana, and Greek yogurt. Add nuts and seeds for extra calories."
+            },
+            lunch: {
+              calories: Math.round(mealSize),
+              protein: Math.round(protein / 4),
+              carbs: Math.round(carbs / 4),
+              description: "Calorie-dense lunch: Chicken/paneer curry with brown rice/quinoa, vegetables, and whole grain rotis. Include healthy fats like olive oil."
+            },
+            snack: {
+              calories: Math.round(mealSize * 0.6),
+              protein: Math.round(protein / 4 * 0.5),
+              carbs: Math.round(carbs / 4 * 0.6),
+              description: "Energy-packed snack: Trail mix with nuts, dried fruits, protein shake, or granola bars. Smoothie with protein powder."
+            },
+            dinner: {
+              calories: Math.round(mealSize),
+              protein: Math.round(protein / 4),
+              carbs: Math.round(carbs / 4),
+              description: "Nutrient-rich dinner: Salmon/tofu, sweet potatoes, steamed vegetables, and quinoa. Add healthy fats like coconut milk."
+            }
+          };
+          
+        case 'overweight':
+          return {
+            breakfast: {
+              calories: Math.round(mealSize * 0.8),
+              protein: Math.round(protein / 4 * 1.2),
+              carbs: Math.round(carbs / 4 * 0.7),
+              description: "High-protein, low-carb breakfast: 2 eggs, lean protein, vegetables sautéed in minimal oil, and protein smoothie."
+            },
+            lunch: {
+              calories: Math.round(mealSize),
+              protein: Math.round(protein / 4),
+              carbs: Math.round(carbs / 4),
+              description: "Balanced lunch: Grilled chicken/fish/tofu, quinoa or brown rice (small portion), large salad with dressing, and steamed vegetables."
+            },
+            snack: {
+              calories: Math.round(mealSize * 0.4),
+              protein: Math.round(protein / 4 * 0.6),
+              carbs: Math.round(carbs / 4 * 0.3),
+              description: "Low-calorie snack: Greek yogurt with berries, vegetable sticks with hummus, or apple with peanut butter (small amount)."
+            },
+            dinner: {
+              calories: Math.round(mealSize * 0.9),
+              protein: Math.round(protein / 4),
+              carbs: Math.round(carbs / 4 * 0.8),
+              description: "Light dinner: Grilled fish/chicken, roasted vegetables, salad, and minimal grains. Soup-based meals with lean protein."
+            }
+          };
+          
+        default: // healthy
+          return {
+            breakfast: {
+              calories: Math.round(mealSize),
+              protein: Math.round(protein / 4),
+              carbs: Math.round(carbs / 4),
+              description: "Balanced breakfast: 2 eggs, whole grain toast, fresh fruits, Greek yogurt, and a serving of nuts or seeds."
+            },
+            lunch: {
+              calories: Math.round(mealSize),
+              protein: Math.round(protein / 4),
+              carbs: Math.round(carbs / 4),
+              description: "Complete lunch: Grilled chicken/paneer/tofu, brown rice or quinoa, mixed vegetables, salad, and a serving of legumes."
+            },
+            snack: {
+              calories: Math.round(mealSize * 0.5),
+              protein: Math.round(protein / 4 * 0.6),
+              carbs: Math.round(carbs / 4 * 0.5),
+              description: "Healthy snack: Fresh fruits, nuts, protein bar, or Greek yogurt with berries. Avoid processed snacks."
+            },
+            dinner: {
+              calories: Math.round(mealSize),
+              protein: Math.round(protein / 4),
+              carbs: Math.round(carbs / 4),
+              description: "Nutritious dinner: Baked fish/chicken/tofu, sweet potato or quinoa, steamed vegetables, and a light salad."
+            }
+          };
+      }
+    }
+
+    // Load personalized nutrition plan
+    function loadPersonalizedNutrition() {
+      const nutritionContent = document.getElementById('nutritionContent');
+      const profileData = localStorage.getItem('profileData');
+      
+      if (profileData) {
+        const data = JSON.parse(profileData);
+        const age = data.age || 25;
+        const weight = data.weight || 70;
+        const height = data.height || 170;
+        const activityLevel = localStorage.getItem('activityLevel') || 'moderate';
+        
+        // Calculate personalized diet
+        const diet = calculatePersonalizedDiet(age, weight, height, activityLevel);
+        
+        // Show personalized badge
+        document.getElementById('personalizedBadge').style.display = 'block';
+        
+        // Generate HTML
+        nutritionContent.innerHTML = `
+          <div class="nutrition-card">
+            <h5 class="meal-title">Breakfast</h5>
+            <div class="meal-macro">Approx: ${diet.mealPlan.breakfast.calories} kcal • ${diet.mealPlan.breakfast.protein}g protein</div>
+            <div class="meal-suggest">${diet.mealPlan.breakfast.description}</div>
+          </div>
+          
+          <div class="nutrition-card">
+            <h5 class="meal-title">Lunch</h5>
+            <div class="meal-macro">Approx: ${diet.mealPlan.lunch.calories} kcal • ${diet.mealPlan.lunch.protein}g protein</div>
+            <div class="meal-suggest">${diet.mealPlan.lunch.description}</div>
+          </div>
+          
+          <div class="nutrition-card">
+            <h5 class="meal-title">Snack</h5>
+            <div class="meal-macro">Approx: ${diet.mealPlan.snack.calories} kcal • ${diet.mealPlan.snack.protein}g protein</div>
+            <div class="meal-suggest">${diet.mealPlan.snack.description}</div>
+          </div>
+          
+          <div class="nutrition-card">
+            <h5 class="meal-title">Dinner</h5>
+            <div class="meal-macro">Approx: ${diet.mealPlan.dinner.calories} kcal • ${diet.mealPlan.dinner.protein}g protein</div>
+            <div class="meal-suggest">${diet.mealPlan.dinner.description}</div>
+          </div>
+        `;
+      } else {
+        // Show default nutrition plan
+        nutritionContent.innerHTML = `
+          <div class="nutrition-card">
+            <h5 class="meal-title">Breakfast</h5>
+            <div class="meal-macro">Approx: 350 kcal • 17g protein</div>
+            <div class="meal-suggest">Oats with milk, 2 boiled eggs, 1 banana or apple, almonds/chia seeds.</div>
+          </div>
+          
+          <div class="nutrition-card">
+            <h5 class="meal-title">Lunch</h5>
+            <div class="meal-macro">Approx: 600 kcal • 28g protein</div>
+            <div class="meal-suggest">Brown rice or wheat rotis, grilled chicken/paneer/dal, mixed salad, low-fat curd.</div>
+          </div>
+          
+          <div class="nutrition-card">
+            <h5 class="meal-title">Snack</h5>
+            <div class="meal-macro">Approx: 200 kcal • 8g protein</div>
+            <div class="meal-suggest">Fresh fruit bowl, roasted chana or nuts, Greek yogurt.</div>
+          </div>
+          
+          <div class="nutrition-card">
+            <h5 class="meal-title">Dinner</h5>
+            <div class="meal-macro">Approx: 500 kcal • 20g protein</div>
+            <div class="meal-suggest">Quinoa or dal soup, mixed vegetable stir-fry, grilled tofu/fish/chicken, light salad.</div>
+          </div>
+        `;
+      }
+    }
+
+    // Load nutrition plan on page load
+    loadPersonalizedNutrition();
+  </script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Fit Track — Nutrition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Use the same Bootstrap and Icons as other pages -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+    
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --secondary: #ec4899;
+      --secondary-light: #f472b6;
+      --accent: #06b6d4;
+      --accent-light: #22d3ee;
+      --success: #10b981;
+      --success-light: #34d399;
+      --warning: #f59e0b;
+      --warning-light: #fbbf24;
+      --danger: #ef4444;
+      --danger-light: #f87171;
+      --purple: #8b5cf6;
+      --purple-light: #a78bfa;
+      --orange: #f97316;
+      --orange-light: #fb923c;
+      
+      --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --surface: rgba(255, 255, 255, 0.95);
+      --surface-hover: rgba(255, 255, 255, 1);
+      --glass: rgba(255, 255, 255, 0.1);
+      --glass-hover: rgba(255, 255, 255, 0.2);
+      
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      --radius: 1rem;
+      --radius-sm: 0.5rem;
+      --radius-lg: 1.5rem;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: all 0.15s ease;
+      --transition-slow: all 0.5s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--background);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+      animation: backgroundFloat 20s ease-in-out infinite;
+    }
+    
+    @keyframes backgroundFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(1deg); }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .sidebar {
+      min-width: 240px; 
+      max-width: 260px;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-primary);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-xl);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      user-select: none;
+      animation: fadeInLeft 0.8s ease-out;
+    }
+    
+    .sidebar a.nav-link { 
+      color: var(--text-secondary);
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sidebar a.nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .sidebar a.nav-link:hover::before {
+      left: 100%;
+    }
+    
+    .sidebar a.nav-link.active, .sidebar a.nav-link:hover { 
+      background: var(--glass);
+      color: var(--primary);
+      transform: translateX(8px);
+      box-shadow: var(--shadow-glow);
+    }
+    
+    .card-nutrition {
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: var(--shadow-xl);
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      animation: fadeInUp 1s ease-out both;
+    }
+    
+    .card-nutrition:nth-child(1) { animation-delay: 0.4s; }
+    .card-nutrition:nth-child(2) { animation-delay: 0.6s; }
+    .card-nutrition:nth-child(3) { animation-delay: 0.8s; }
+    .card-nutrition:nth-child(4) { animation-delay: 1s; }
+    
+    .card-nutrition::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      background-size: 200% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+    
+    .card-nutrition:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: var(--shadow-xl), var(--shadow-glow);
+    }
+    
+    .card-nutrition h5 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .macro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .suggest {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      user-select: text;
+      transition: var(--transition);
+    }
+    
+    .card-nutrition:hover .suggest {
+      color: var(--text-primary);
+    }
+    
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+    }
+    
+    .text-muted {
+      color: var(--text-muted) !important;
+      font-size: 1rem;
+    }
+    
+    /* Main content area - Add left margin to account for fixed sidebar */
+    main, .main-content {
+      margin-left: 260px;
+      padding: 2rem;
+      min-height: 100vh;
+      animation: fadeInUp 1s ease-out 0.4s both;
+      will-change: transform;
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Performance optimizations for 60fps */
+    * {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      perspective: 1000px;
+    }
+    
+    .card-nutrition, .sidebar a, .btn {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+    
+    /* Responsive - hide sidebar on mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-width: 100%;
+        max-width: 100%;
+      }
+      
+      main, .main-content {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row g-0">
+      <!-- Sidebar -->
+      <aside class="col-auto sidebar d-flex flex-column gap-3" role="navigation" aria-label="Main navigation">
+        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:44px;height:44px; background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: var(--shadow-glow);">
+          <span class="fw-bold text-white" style="font-family: 'Poppins', sans-serif; font-size: 1.2rem;">FT</span>
+        </div>
+        <div>
+          <div class="fw-bold" style="font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">FITTRACK</div>
+          <div class="muted-sm" style="color: var(--text-muted); font-size: 0.8rem;">FITNESS TRACKER</div>
+        </div>
+        </div>
+        <nav class="nav flex-column" aria-label="Sidebar navigation">
+          <a class="nav-link" href="index.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+          <a class="nav-link" href="workouts.html"><i class="bi bi-bar-chart-line me-2"></i>Workouts</a>
+          <a class="nav-link active" href="nutrition.html"><i class="bi bi-basket me-2"></i>Nutrition</a>
+          <a class="nav-link" href="progress.html"><i class="bi bi-graph-up me-2"></i>Progress</a>
+          <a class="nav-link" href="profile.html"><i class="bi bi-person-circle me-2"></i>Profile</a>
+          <a class="nav-link" href="settings.html"><i class="bi bi-gear me-2"></i>Settings</a>
+          <a class="nav-link" href="details.html"><i class="bi bi-card-text me-2"></i>Details</a>
+        </nav>
+      </aside>
+      <!-- Main -->
+      <main class="col px-4 py-4">
+        <header class="mb-4">
+          <div>
+            <h2>NUTRITION</h2>
+            <div class="text-muted mb-2">Daily healthy meal ideas and macros for an active lifestyle.</div>
+          </div>
+        </header>
+        <div class="card-nutrition">
+          <h5 class="mb-1">Breakfast</h5>
+          <div class="macro mb-1">Approx: 350 kcal • 17g protein</div>
+          <div class="suggest">
+            Oats with milk, 2 boiled eggs, 1 banana or apple, almonds/chia seeds.
+          </div>
+        </div>
+        <div class="card-nutrition">
+          <h5 class="mb-1">Lunch</h5>
+          <div class="macro mb-1">Approx: 600 kcal • 28g protein</div>
+          <div class="suggest">
+            Brown rice or wheat rotis, grilled chicken/paneer/dal, mixed salad, low-fat curd.
+          </div>
+        </div>
+        <div class="card-nutrition">
+          <h5 class="mb-1">Snack</h5>
+          <div class="macro mb-1">Approx: 200 kcal • 8g protein</div>
+          <div class="suggest">
+            Fresh fruit bowl, roasted chana or nuts, Greek yogurt.
+          </div>
+        </div>
+        <div class="card-nutrition">
+          <h5 class="mb-1">Dinner</h5>
+          <div class="macro mb-1">Approx: 500 kcal • 20g protein</div>
+          <div class="suggest">
+            Quinoa or dal soup, mixed vegetable stir-fry, grilled tofu/fish/chicken, light salad.
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

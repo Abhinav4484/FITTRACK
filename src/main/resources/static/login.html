@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FITTRACK — Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="cyberpunk.css" rel="stylesheet">
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    .login-box {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+      border: 2px solid var(--cp-neon-cyan);
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+      max-width: 450px;
+      width: 100%;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(15px);
+    }
+    
+    .login-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan), var(--cp-neon-yellow));
+      animation: cyberpunkGlow 3s ease-in-out infinite;
+    }
+    
+    .login-logo {
+      font-family: 'Audiowide', monospace;
+      font-size: 3.5rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 50px rgba(0, 255, 255, 0.8);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      word-wrap: break-word;
+      line-height: 1.2;
+    }
+    
+    .login-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-neon-cyan);
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .form-label {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-neon-cyan);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+      background: rgba(26, 26, 46, 0.7);
+      border: 2px solid rgba(0, 255, 255, 0.3);
+      border-radius: 0;
+      padding: 1rem 1.25rem;
+      color: var(--cp-text-main);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(10px);
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-control:focus {
+      border-color: var(--cp-neon-cyan);
+      background: rgba(26, 26, 46, 0.9);
+      outline: none;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+      color: var(--cp-text-main);
+    }
+    
+    .form-control::placeholder {
+      color: var(--cp-text-dim);
+      opacity: 0.7;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      border: 2px solid transparent;
+      color: var(--cp-bg-dark);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      border-radius: 0;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--cp-neon-cyan), var(--cp-neon-pink));
+      box-shadow: 0 0 50px rgba(255, 0, 255, 0.6);
+      transform: translateY(-3px);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, var(--cp-neon-green), #00cc88);
+      border: 2px solid transparent;
+      color: var(--cp-bg-dark);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      border-radius: 0;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    
+    .btn-success:hover {
+      background: linear-gradient(135deg, #00cc88, var(--cp-neon-green));
+      box-shadow: 0 0 50px rgba(0, 255, 136, 0.6);
+      transform: translateY(-3px);
+    }
+    
+    .forgot-password-link {
+      color: var(--cp-neon-cyan);
+      text-decoration: none;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      transition: all 0.3s ease;
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    
+    .forgot-password-link:hover {
+      color: var(--cp-neon-pink);
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+    
+    .message {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 0;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+    
+    .message.success {
+      background: rgba(0, 255, 136, 0.2);
+      border: 1px solid var(--cp-neon-green);
+      color: var(--cp-neon-green);
+    }
+    
+    .message.error {
+      background: rgba(255, 0, 102, 0.2);
+      border: 1px solid var(--cp-neon-red);
+      color: var(--cp-neon-red);
+    }
+    
+    /* Bootup sequence - show only once */
+    .bootup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--cp-bg-darker);
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .bootup-overlay.show {
+      display: flex;
+      animation: bootupFadeOut 0.5s ease-out 3s forwards;
+    }
+    
+    .bootup-logo {
+      font-family: 'Audiowide', monospace;
+      font-size: 4rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 50px rgba(0, 255, 255, 0.8);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: bootupGlow 2s ease-in-out infinite;
+    }
+    
+    .bootup-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-neon-cyan);
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      animation: bootupPulse 1.5s ease-in-out infinite;
+    }
+    
+    .bootup-progress {
+      width: 300px;
+      height: 4px;
+      background: rgba(0, 255, 255, 0.2);
+      border-radius: 2px;
+      margin-top: 2rem;
+      overflow: hidden;
+    }
+    
+    .bootup-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      width: 0%;
+      animation: bootupProgress 3s ease-out forwards;
+    }
+    
+    @keyframes bootupGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255, 0, 255, 0.8)); }
+    }
+    
+    @keyframes bootupPulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes bootupProgress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    @keyframes bootupFadeOut {
+      0% { opacity: 1; visibility: visible; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Bootup Sequence -->
+  <div class="bootup-overlay" id="bootupOverlay">
+    <div class="bootup-logo">FITTRACK</div>
+    <div class="bootup-subtitle">FITNESS TRACKING SYSTEM</div>
+    <div class="bootup-progress">
+      <div class="bootup-progress-bar"></div>
+    </div>
+  </div>
+
+  <div class="login-container">
+    <div class="login-box">
+<h1 class="login-logo" style="font-size: 3.0em;">FITTRACK</h1>
+      <p class="login-subtitle">FITNESS TRACKING SYSTEM</p>
+      
+      <!-- Login Form -->
+      <div id="loginSection">
+        <form id="loginForm">
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="loginEmail" placeholder="Enter your email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">LOGIN</button>
+        </form>
+        <a href="#" class="forgot-password-link" onclick="showForgotPasswordModal()">Forgot Password?</a>
+        <button type="button" class="btn btn-success" onclick="showRegisterSection()">CREATE NEW ACCOUNT</button>
+        <div id="message"></div>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerSection" style="display: none;">
+        <form id="registerForm">
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="registerName" placeholder="Enter your full name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="registerEmail" placeholder="Enter your email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" id="registerPassword" placeholder="Create a password" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="registerConfirmPassword" placeholder="Confirm your password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">REGISTER</button>
+        </form>
+        <button type="button" class="btn btn-success" onclick="showLoginSection()">BACK TO LOGIN</button>
+        <div id="registerMessage"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="cyberpunk-effects.js"></script>
+  <script>
+    // Bootup sequence - show only on first visit
+    if (!localStorage.getItem('fittrackFirstVisit')) {
+      document.getElementById('bootupOverlay').classList.add('show');
+      localStorage.setItem('fittrackFirstVisit', 'true');
+    }
+    
+    window.addEventListener('load', function() {
+      if (document.getElementById('bootupOverlay').classList.contains('show')) {
+        setTimeout(() => {
+          document.getElementById('bootupOverlay').style.display = 'none';
+        }, 3500);
+      }
+    });
+
+    function showRegisterSection() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('registerSection').style.display = 'block';
+    }
+
+    function showLoginSection() {
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('registerSection').style.display = 'none';
+    }
+
+    function showForgotPasswordModal() {
+      alert('Password reset functionality will send an email to your registered address.');
+    }
+
+    function showMessage(text, type, targetElement) {
+      const messageDiv = document.getElementById(targetElement);
+      messageDiv.textContent = text;
+      messageDiv.className = `message ${type}`;
+      setTimeout(() => {
+        messageDiv.textContent = '';
+        messageDiv.className = '';
+      }, 3000);
+    }
+
+    // Login form handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch('/api/users/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+          const user = await response.json();
+          localStorage.setItem('userId', user.id);
+          localStorage.setItem('userEmail', user.email);
+          localStorage.setItem('userName', user.username || user.email);
+          showMessage('Login successful! Redirecting...', 'success', 'message');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1000);
+        } else {
+          showMessage('Invalid credentials!', 'error', 'message');
+        }
+      } catch (error) {
+        showMessage('Login failed. Please try again.', 'error', 'message');
+      }
+    });
+
+    // Register form handler
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('registerName').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+      if (password !== confirmPassword) {
+        showMessage('Passwords do not match!', 'error', 'registerMessage');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: name, email, password })
+        });
+
+        if (response.ok) {
+          const user = await response.json();
+          localStorage.setItem('userId', user.id);
+          localStorage.setItem('userEmail', user.email);
+          localStorage.setItem('userName', user.username);
+          localStorage.setItem('justRegistered', 'true');
+          showMessage('Registration successful! Redirecting to profile...', 'success', 'registerMessage');
+          setTimeout(() => {
+            window.location.href = 'profile.html';
+          }, 1000);
+        } else {
+          showMessage('Registration failed. Email might already exist.', 'error', 'registerMessage');
+        }
+      } catch (error) {
+        showMessage('Registration failed. Please try again.', 'error', 'registerMessage');
+      }
+    });
+
+    // Check if already logged in
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>
+
+

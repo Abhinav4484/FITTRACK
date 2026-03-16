@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FITTRACK — Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+    
+    /* CYBERPUNK 2077 THEME */
+    :root {
+      --cp-primary: #ff00ff;
+      --cp-secondary: #00ffff;
+      --cp-accent: #ff1744;
+      --cp-bg-dark: #0a0a0a;
+      --cp-bg-darker: #050505;
+      --cp-surface: #1a1a2e;
+      --cp-surface-glow: #16213e;
+      --cp-neon-cyan: #00ffff;
+      --cp-neon-pink: #ff00ff;
+      --cp-neon-yellow: #ffff00;
+      --cp-text-main: #e0e7ff;
+      --cp-text-dim: #94a3b8;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--cp-bg-darker);
+      color: var(--cp-text-main);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+    
+    /* Animated cyberpunk background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(255, 0, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 0, 0.08) 0%, transparent 50%),
+        linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+      pointer-events: none;
+      z-index: -2;
+      animation: cyberpunkShift 10s ease-in-out infinite;
+    }
+    
+    @keyframes cyberpunkShift {
+      0%, 100% { opacity: 0.8; filter: hue-rotate(0deg); }
+      50% { opacity: 1; filter: hue-rotate(20deg); }
+    }
+    
+    /* Scanlines effect */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 255, 0.03) 2px,
+        rgba(0, 255, 255, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanlines 8s linear infinite;
+    }
+    
+    @keyframes scanlines {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(4px); }
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      min-width: 260px;
+      max-width: 280px;
+      background: linear-gradient(180deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+      border-right: 2px solid var(--cp-neon-cyan);
+      box-shadow: 
+        0 0 40px rgba(0, 255, 255, 0.3),
+        inset -2px 0 0 rgba(255, 0, 255, 0.2);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      padding: 2rem 1.5rem;
+      backdrop-filter: blur(10px);
+      animation: slideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+    
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--cp-neon-pink), var(--cp-neon-cyan), transparent);
+      animation: cyberpunkGlow 3s ease-in-out infinite;
+    }
+    
+    @keyframes cyberpunkGlow {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    
+    .brand-logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      border: 2px solid var(--cp-neon-cyan);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+      animation: logoPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes logoPulse {
+      0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+      50% { box-shadow: 0 0 50px rgba(255, 0, 255, 0.8); }
+    }
+    
+    .brand-logo span {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, #fff, #00ffff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+    }
+    
+    .brand-text h1 {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1.6rem;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      word-wrap: break-word;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+      filter: drop-shadow(0 0 10px rgba(255, 0, 255, 0.5));
+    }
+    
+    .brand-text p {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      color: var(--cp-neon-cyan);
+      margin: 0;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    
+    .nav-link {
+      color: rgba(224, 231, 255, 0.7);
+      padding: 1rem 1.25rem;
+      margin: 0.25rem 0;
+      border-radius: 0;
+      border-left: 3px solid transparent;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+    
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+      transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .nav-link:hover::before {
+      width: 100%;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--cp-neon-cyan);
+      border-left-color: var(--cp-neon-cyan);
+      background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), transparent);
+      text-shadow: 0 0 10px var(--cp-neon-cyan);
+      transform: translateX(8px);
+    }
+    
+    .nav-link i {
+      margin-right: 0.75rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    /* Main content */
+    main {
+      margin-left: 280px;
+      padding: 3rem 2rem;
+      padding-bottom: 4rem;
+      min-height: 100vh;
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .page-header {
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    
+    .page-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 2.8rem;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 40px rgba(255, 0, 255, 0.5);
+      animation: titleGlow 2s ease-in-out infinite;
+      word-wrap: break-word;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+    }
+    
+    @keyframes titleGlow {
+      0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 0, 255, 0.5)); }
+      50% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.8)); }
+    }
+    
+    .page-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.2rem;
+      color: var(--cp-text-dim);
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 0;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      animation: cardFadeIn 0.8s ease-out;
+      animation-fill-mode: both;
+    }
+    
+    .stat-card:nth-child(1) { animation-delay: 0.2s; }
+    .stat-card:nth-child(2) { animation-delay: 0.4s; }
+    .stat-card:nth-child(3) { animation-delay: 0.6s; }
+    .stat-card:nth-child(4) { animation-delay: 0.8s; }
+    
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      opacity: 0.7;
+    }
+    
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent 0%, rgba(0, 255, 255, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      border-color: var(--cp-neon-cyan);
+      box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.3),
+        0 0 60px rgba(255, 0, 255, 0.2);
+      transform: translateY(-8px);
+    }
+    
+    .stat-card:hover::after {
+      opacity: 1;
+    }
+    
+    .stat-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.875rem;
+      color: var(--cp-neon-cyan);
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .stat-value {
+      font-family: 'Orbitron', monospace;
+      font-size: 3rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff, var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+      animation: numberGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes numberGlow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.3); }
+    }
+    
+    .stat-change {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    
+    .stat-change.positive {
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.2), rgba(0, 255, 255, 0.2));
+      color: #00ff88;
+      border: 1px solid #00ff88;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+    
+    .stat-change.negative {
+      background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 100, 100, 0.2));
+      color: #ff0066;
+      border: 1px solid #ff0066;
+      box-shadow: 0 0 10px rgba(255, 0, 102, 0.5);
+    }
+    
+    /* Content sections */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .content-card {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 0;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .content-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+    }
+    
+    .content-card:hover {
+      border-color: var(--cp-neon-cyan);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    }
+    
+    .content-card h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--cp-neon-cyan);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+    
+    /* Buttons */
+    .btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      padding: 0.875rem 2rem;
+      border: 2px solid var(--cp-neon-cyan);
+      background: transparent;
+      color: var(--cp-neon-cyan);
+      border-radius: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:hover {
+      background: var(--cp-neon-cyan);
+      color: var(--cp-bg-dark);
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+      transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      border-color: transparent;
+      color: var(--cp-bg-dark);
+      font-weight: 700;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--cp-neon-cyan), var(--cp-neon-pink));
+    }
+    
+    /* Chart container */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 1.5rem;
+    }
+    
+    /* List items */
+    .list-group-item {
+      background: rgba(26, 26, 46, 0.5);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 0;
+      margin-bottom: 0.5rem;
+      padding: 1rem 1.25rem;
+      transition: all 0.3s ease;
+    }
+    
+    .list-group-item:hover {
+      background: rgba(0, 255, 255, 0.1);
+      border-color: var(--cp-neon-cyan);
+      transform: translateX(8px);
+    }
+    
+    /* Badge */
+    .badge {
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    
+    .bg-primary {
+      background: var(--cp-neon-cyan) !important;
+      color: var(--cp-bg-dark) !important;
+    }
+    
+    .bg-secondary {
+      background: var(--cp-neon-pink) !important;
+      color: var(--cp-bg-dark) !important;
+    }
+    
+    /* Progress bar */
+    .progress {
+      height: 8px;
+      border-radius: 0;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      box-shadow: 0 0 20px var(--cp-neon-cyan);
+      transition: width 1s ease;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100vh;
+  /* ... keep all original sidebar CSS ... */
+  overflow-y: auto;  /* let sidebar scroll */
+}
+.brand-text h1 {
+  white-space: nowrap;
+  max-width: none;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0,255,255,0.1);
+  background: linear-gradient(180deg, transparent, rgba(10,10,22,0.77) 85%);
+  position: relative;
+  z-index: 1;
+}
+.btn-login {
+  margin-top: 1.5rem;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: linear-gradient(94deg,#00ffff 10%, #ff00ff 90%);
+  color: #141b24;
+  border: none;
+  border-radius: 1.4rem;
+  padding: 0.95rem 0;
+  width: 100%;
+  font-size: 1.08rem;
+  box-shadow: 0 0 24px #00e4ff80, 0 0 11px #fb21e3a0;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  text-transform: uppercase;
+  outline: none;
+  cursor: pointer;
+  animation: logoPulse 2.2s ease-in-out infinite;
+}
+.btn-login:hover {
+  background: linear-gradient(94deg,#ff00ff 10%, #00ffff 90%);
+  color: #fff;
+  box-shadow: 0 0 44px #c1ffffc0;
+}
+
+      
+      main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+      
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Performance optimizations */
+    * {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    
+    .stat-card, .content-card, .nav-link, .btn {
+      transform: translateZ(0);
+      will-change: transform;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+<aside class="sidebar">
+  <div>
+    <div class="brand d-flex flex-row align-items-center mb-4 pb-3 border-bottom border-info">
+      <div class="brand-logo">
+        <span>FT</span>
+      </div>
+      <div class="brand-text">
+        <h1 style="white-space:nowrap;max-width:none;letter-spacing:0.06em;margin:0;">FITTRAC</h1>
+        <p>FITNESS TRACKING SYSTEM</p>
+      </div>
+    </div>
+    <nav>
+      <a class="nav-link active" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="workouts.html"><i class="bi bi-bar-chart-line"></i> Workouts</a>
+      <a class="nav-link" href="nutrition.html"><i class="bi bi-basket"></i> Nutrition</a>
+      <a class="nav-link" href="progress.html"><i class="bi bi-graph-up"></i> Progress</a>
+      <a class="nav-link" href="profile.html"><i class="bi bi-person-circle"></i> Profile</a>
+      <a class="nav-link" href="settings.html"><i class="bi bi-gear"></i> Settings</a>
+    </nav>
+  </div>
+  <div class="sidebar-bottom">
+  <a href="login.html" class="btn btn-login w-100 mt-3">
+  <i class="bi bi-box-arrow-in-right me-2"></i>Logged In
+</a>
+
+  </div>
+</aside>
+
+
+  <!-- Main Content -->
+  <main>
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">System Overview & Performance Metrics</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Today's Steps</div>
+        <div class="stat-value">6,432</div>
+        <div class="stat-change positive">+12%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Calories Burned</div>
+        <div class="stat-value">1,780</div>
+        <div class="stat-change positive">+8%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Workouts This Week</div>
+        <div class="stat-value">4</div>
+        <div class="stat-change positive">On Track</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Weight</div>
+        <div class="stat-value">72.4</div>
+        <div class="stat-change negative">-0.5 kg</div>
+    </div>
+  </div>
+
+    <div class="content-grid">
+      <div class="content-card">
+        <h3>Recent Activity</h3>
+        <div class="chart-container">
+          <canvas id="activityChart"></canvas>
+      </div>
+    </div>
+      <div class="content-card">
+        <h3>Quick Actions</h3>
+        <button class="btn btn-primary w-100 mb-3">Start Workout</button>
+        <button class="btn w-100 mb-3">Log Nutrition</button>
+        <button class="btn w-100">View Progress</button>
+    </div>
+          </div>
+  </main>
+
+  <script src="cyberpunk-effects.js"></script>
+  <script>
+    // Check if user is logged in
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      window.location.href = 'login.html';
+    }
+  </script>
+  <script>
+    // Initialize chart
+    const ctx = document.getElementById('activityChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+          label: 'Workouts',
+          data: [2, 3, 1, 4, 3, 2, 3],
+          borderColor: '#00ffff',
+          backgroundColor: 'rgba(0, 255, 255, 0.1)',
+          borderWidth: 2,
+              fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#00ffff',
+          pointBorderColor: '#0a0a0a',
+          pointBorderWidth: 2
+            }]
+          },
+          options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(0, 255, 255, 0.1)',
+              borderColor: 'rgba(0, 255, 255, 0.3)'
+            },
+            ticks: {
+              color: '#94a3b8'
+            }
+          },
+          y: {
+            grid: {
+              color: 'rgba(0, 255, 255, 0.1)',
+              borderColor: 'rgba(0, 255, 255, 0.3)'
+            },
+            ticks: {
+              color: '#94a3b8'
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+

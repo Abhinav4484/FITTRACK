@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fit Track — Logged Out</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at 70% 10%, #20d5ff60 1%, transparent 60%),
+        radial-gradient(ellipse at 30% 95%, #6646ff33 0%, transparent 60%),
+        linear-gradient(120deg, #131747 0%, #18192f 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logout-card {
+      background: linear-gradient(135deg, #101f3a 60%, #192039 100%);
+      border-radius: 28px;
+      padding: 2.8rem 2rem 2.2rem;
+      box-shadow: 0 6px 45px 0 #3182ed99, 0 0px 0px 0 #000a;
+      text-align: center;
+      max-width: 430px;
+      width: 100%;
+      animation: fadeIn 0.6s cubic-bezier(.6,.15,.43,1.25);
+      color: #e6f8ff;
+      border: 1.7px solid #20d5ff40;
+      position: relative;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-22px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .logout-icon {
+      font-size: 4rem;
+      color: #24c8ff;
+      margin-bottom: 1.1rem;
+      filter: drop-shadow(0 0 16px #23f6ff99);
+      user-select: none;
+    }
+    h1 {
+      color: #7dd5ff;
+      margin-bottom: 1rem;
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-family: 'Syne', 'Inter', Arial, sans-serif;
+      background: linear-gradient(90deg,#20d5ff 55%,#191b45 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      text-shadow: 0 0 38px #20eaff86;
+      user-select:none;
+    }
+    .message {
+      color: #b3e4ffcc;
+      margin-bottom: 2rem;
+      font-size: 1.12rem;
+      font-weight: 500;
+    }
+    .redirect-text {
+      color: #89a3cd;
+      font-size: 1rem;
+      margin-top: 1.1rem;
+      font-weight: 400;
+      opacity: 0.85;
+    }
+    .btn-login {
+      background: linear-gradient(90deg,#03e7ff 0%,#006aff 100%);
+      border: none;
+      color: #e9fcff;
+      padding: 1rem 2.5rem;
+      border-radius: 16px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      box-shadow: 0 0 18px #00cfff88;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.25s;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      margin-top: 0.4rem;
+    }
+    .btn-login:hover {
+      background: linear-gradient(90deg,#00eaff 0%,#3496ff 100%);
+      box-shadow: 0 0 35px #40c0ffa4;
+      transform: translateY(-3px) scale(1.04);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="logout-card">
+    <div class="logout-icon">👋</div>
+    <h1>Logged Out Successfully</h1>
+    <p class="message">You have been logged out of your account. Thank you for using Fit Track!</p>
+    <button class="btn-login" onclick="window.location.href='profile.html'">
+      Go to Login Page
+    </button>
+    <p class="redirect-text">Redirecting automatically in <span id="countdown">3</span> seconds...</p>
+  </div>
+  <script>
+    // Clear all user session data
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Countdown timer
+    let seconds = 3;
+    const countdownElement = document.getElementById('countdown');
+    const countdown = setInterval(() => {
+      seconds--;
+      countdownElement.textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(countdown);
+        window.location.href = 'profile.html';
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

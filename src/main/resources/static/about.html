@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>FITTRACK — ABOUT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="cyberpunk.css" rel="stylesheet">
+  <style>
+    /* Page-specific styles */
+    .about-main {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .about-glass {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+      border: 2px solid var(--cp-neon-cyan);
+      border-radius: 0;
+      box-shadow: 
+        0 0 50px rgba(0, 255, 255, 0.3),
+        inset 0 0 0 1px rgba(255, 0, 255, 0.1);
+      max-width: 600px;
+      width: 100%;
+      padding: 3rem 2.5rem;
+      margin: 0 auto;
+      animation: fadeInUp 1s cubic-bezier(0.13, 0.67, 0.38, 0.99);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(15px);
+    }
+    
+    .about-glass::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan), var(--cp-neon-yellow));
+      animation: cyberpunkGlow 3s ease-in-out infinite;
+    }
+    
+    .about-title {
+      font-family: 'Audiowide', monospace;
+      font-size: 3rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+      margin-bottom: 2rem;
+      text-align: center;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    
+    .about-text {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-text-main);
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .about-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .feature-item {
+      background: rgba(26, 26, 46, 0.6);
+      border: 2px solid rgba(0, 255, 255, 0.3);
+      border-radius: 0;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .feature-item:hover::before {
+      left: 100%;
+    }
+    
+    .feature-item:hover {
+      background: rgba(26, 26, 46, 0.8);
+      border-color: var(--cp-neon-cyan);
+      transform: translateY(-8px);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
+      color: var(--cp-neon-cyan);
+      margin-bottom: 1rem;
+    }
+    
+    .feature-title {
+      font-family: 'Audiowide', monospace;
+      color: var(--cp-neon-pink);
+      font-size: 1rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    .feature-desc {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-text-dim);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    /* Bootup sequence */
+    .bootup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--cp-bg-darker);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: bootupFadeOut 0.5s ease-out 3s forwards;
+    }
+    
+    .bootup-logo {
+      font-family: 'Audiowide', monospace;
+      font-size: 4rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 50px rgba(0, 255, 255, 0.8);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: bootupGlow 2s ease-in-out infinite;
+    }
+    
+    .bootup-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-neon-cyan);
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      animation: bootupPulse 1.5s ease-in-out infinite;
+    }
+    
+    .bootup-progress {
+      width: 300px;
+      height: 4px;
+      background: rgba(0, 255, 255, 0.2);
+      border-radius: 2px;
+      margin-top: 2rem;
+      overflow: hidden;
+    }
+    
+    .bootup-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      width: 0%;
+      animation: bootupProgress 3s ease-out forwards;
+    }
+    
+    @keyframes bootupGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255, 0, 255, 0.8)); }
+    }
+    
+    @keyframes bootupPulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes bootupProgress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    @keyframes bootupFadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Bootup Sequence -->
+  <div class="bootup-overlay" id="bootupOverlay">
+    <div class="bootup-logo">FITTRACK</div>
+    <div class="bootup-subtitle">FITNESS TRACKING SYSTEM</div>
+    <div class="bootup-progress">
+      <div class="bootup-progress-bar"></div>
+    </div>
+  </div>
+
+  <div class="about-main">
+    <div class="about-glass">
+      <h1 class="about-title">ABOUT FITTRACK</h1>
+      
+      <p class="about-text">
+        Welcome to the future of fitness tracking. FITTRACK combines cutting-edge technology with 
+        cyberpunk aesthetics to deliver an unparalleled fitness experience. Built for the digital age, 
+        our platform helps you track workouts, monitor nutrition, and achieve your fitness goals with 
+        style and precision.
+      </p>
+      
+      <p class="about-text">
+        Experience the fusion of technology and fitness in a world where data meets design, 
+        and performance meets aesthetics. Join the cyberpunk fitness revolution.
+      </p>
+      
+      <div class="about-features">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="bi bi-lightning-charge"></i>
+          </div>
+          <div class="feature-title">Real-time Tracking</div>
+          <div class="feature-desc">Monitor your workouts and progress in real-time with advanced analytics</div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <div class="feature-title">Secure Data</div>
+          <div class="feature-desc">Your fitness data is protected with enterprise-grade security</div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
+          <div class="feature-title">Advanced Analytics</div>
+          <div class="feature-desc">Get detailed insights into your fitness journey and performance</div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="bi bi-palette"></i>
+          </div>
+          <div class="feature-title">Custom Themes</div>
+          <div class="feature-desc">Personalize your experience with multiple cyberpunk themes</div>
+        </div>
+      </div>
+      
+      <div class="text-center mt-4">
+        <a href="index.html" class="btn btn-primary">
+          <i class="bi bi-arrow-left me-2"></i>BACK TO DASHBOARD
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="cyberpunk-effects.js"></script>
+  <script>
+    // Bootup sequence
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        document.getElementById('bootupOverlay').style.display = 'none';
+      }, 3500);
+    });
+  </script>
+</body>
+</html>

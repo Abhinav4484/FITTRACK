@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Fit Track — Workouts</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+    
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --secondary: #ec4899;
+      --secondary-light: #f472b6;
+      --accent: #06b6d4;
+      --accent-light: #22d3ee;
+      --success: #10b981;
+      --success-light: #34d399;
+      --warning: #f59e0b;
+      --warning-light: #fbbf24;
+      --danger: #ef4444;
+      --danger-light: #f87171;
+      --purple: #8b5cf6;
+      --purple-light: #a78bfa;
+      --orange: #f97316;
+      --orange-light: #fb923c;
+      
+      --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --surface: rgba(255, 255, 255, 0.95);
+      --surface-hover: rgba(255, 255, 255, 1);
+      --glass: rgba(255, 255, 255, 0.1);
+      --glass-hover: rgba(255, 255, 255, 0.2);
+      
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      --radius: 1rem;
+      --radius-sm: 0.5rem;
+      --radius-lg: 1.5rem;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: all 0.15s ease;
+      --transition-slow: all 0.5s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--background);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+      animation: backgroundFloat 20s ease-in-out infinite;
+    }
+    
+    @keyframes backgroundFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(1deg); }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .sidebar {
+      min-width: 240px; 
+      max-width: 260px;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-primary);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-xl);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      user-select: none;
+      animation: fadeInLeft 0.8s ease-out;
+    }
+    
+    .sidebar a.nav-link { 
+      color: var(--text-secondary);
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sidebar a.nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .sidebar a.nav-link:hover::before {
+      left: 100%;
+    }
+    
+    .sidebar a.nav-link.active, .sidebar a.nav-link:hover { 
+      background: var(--glass);
+      color: var(--primary);
+      transform: translateX(8px);
+      box-shadow: var(--shadow-glow);
+    }
+    
+    .card-compact { 
+      padding: 2rem; 
+      border-radius: var(--radius-lg); 
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: var(--shadow-xl);
+      color: var(--text-primary);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 1s ease-out 0.4s both;
+    }
+    
+    .card-compact::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      background-size: 200% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+    
+    .card-compact:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: var(--shadow-xl), var(--shadow-glow);
+    }
+    
+    .form-control {
+      background: var(--glass);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      border-radius: var(--radius);
+      padding: 0.875rem 1rem;
+      transition: var(--transition);
+      margin-bottom: 1rem;
+    }
+    
+    .form-control:focus {
+      border: 2px solid var(--primary);
+      background: var(--glass-hover);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-glow);
+      outline: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.875rem 2rem;
+      font-weight: 600;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl), var(--shadow-glow);
+    }
+    
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(45deg, #ff0066 0%, #ff3366 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-danger:hover {
+      background: linear-gradient(45deg, #ff3366 0%, #ff0066 100%);
+      box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    .list-group-item {
+      background: rgba(17, 34, 61, 0.6);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #9eccf2cc;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    
+    .list-group-item:hover {
+      background: rgba(17, 34, 61, 0.8);
+      border-color: rgba(0, 255, 255, 0.4);
+      transform: translateX(5px);
+      box-shadow: 0 5px 20px rgba(0, 255, 255, 0.2);
+    }
+    
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Main content area - Add left margin to account for fixed sidebar */
+    main, .main-content {
+      margin-left: 260px;
+      padding: 2rem;
+      min-height: 100vh;
+      animation: fadeInUp 1s ease-out 0.4s both;
+      will-change: transform;
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Performance optimizations for 60fps */
+    * {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      perspective: 1000px;
+    }
+    
+    .card-compact, .sidebar a, .btn {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+    
+    /* Responsive - mobile */
+    @media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-width: 100%;
+        max-width: 100%;
+      }
+      
+      main, .main-content {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row g-0">
+      <!-- Sidebar -->
+      <aside class="col-auto sidebar d-flex flex-column gap-3">
+        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:44px;height:44px; background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: var(--shadow-glow);">
+          <span class="fw-bold text-white" style="font-family: 'Poppins', sans-serif; font-size: 1.2rem;">FT</span>
+        </div>
+          <div>
+          <div class="fw-bold" style="font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">FITTRACK</div>
+          <div class="muted-sm" style="color: var(--text-muted); font-size: 0.8rem;">FITNESS TRACKER</div>
+          </div>
+        </div>
+        <nav class="nav flex-column">
+          <a class="nav-link" href="index.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+          <a class="nav-link active" href="workouts.html"><i class="bi bi-bar-chart-line me-2"></i>Workouts</a>
+          <a class="nav-link" href="nutrition.html"><i class="bi bi-basket me-2"></i>Nutrition</a>
+          <a class="nav-link" href="progress.html"><i class="bi bi-graph-up me-2"></i>Progress</a>
+          <a class="nav-link" href="profile.html"><i class="bi bi-person-circle me-2"></i>Profile</a>
+          <a class="nav-link" href="settings.html"><i class="bi bi-gear me-2"></i>Settings</a>
+          <a class="nav-link" href="details.html"><i class="bi bi-card-text me-2"></i>Details</a>
+        </nav>
+      </aside>
+
+      <main class="col px-4 py-4">
+        <header class="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <h2 style="font-family: 'Orbitron', monospace; font-weight: 900; color: #00ffff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); margin-bottom: 0.5rem;">WORKOUTS</h2>
+            <p style="color: #b0d7ff; margin: 0; font-size: 1rem;">Manage your training sessions</p>
+          </div>
+        </header>
+        <div class="card-compact mb-4">
+          <div class="mb-3">
+            <h5 style="color: #00ffff; font-family: 'Orbitron', monospace; margin-bottom: 1rem;">
+              <i class="bi bi-plus-circle me-2"></i>ADD NEW WORKOUT
+            </h5>
+          </div>
+          <form id="workoutForm" class="mb-3">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" style="color: #8fdcff; font-weight: 600;">Workout Name</label>
+                <input id="workoutName" class="form-control" placeholder="e.g., Morning Cardio" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" style="color: #8fdcff; font-weight: 600;">Description</label>
+                <input id="workoutDesc" class="form-control" placeholder="Optional details">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" style="color: #8fdcff; font-weight: 600;">Duration (minutes)</label>
+                <input id="workoutDuration" type="number" class="form-control" placeholder="e.g., 30" min="1" value="30">
+              </div>
+              <div class="col-12">
+                <button class="btn btn-primary w-100" type="submit">
+                  <i class="bi bi-plus-lg me-2"></i>ADD WORKOUT
+                </button>
+              </div>
+            </div>
+            <div id="workoutMsg" class="mt-3 small"></div>
+          </form>
+          
+          <div class="mt-4">
+            <h5 style="color: #ff00ff; font-family: 'Orbitron', monospace; margin-bottom: 1rem;">
+              <i class="bi bi-list-ul me-2"></i>YOUR WORKOUTS
+            </h5>
+          <ul class="list-group" id="workoutList"></ul>
+          </div>
+        </div>       
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Highlight sidebar
+    const currentPage = window.location.pathname.split("/").pop() || 'index.html';
+    document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+      if (link.getAttribute("href") === currentPage) link.classList.add("active");
+    });
+
+    // JS for saving and loading workouts
+    const form = document.getElementById('workoutForm');
+    const list = document.getElementById('workoutList');
+    const msg = document.getElementById('workoutMsg');
+
+    async function loadWorkouts() {
+      list.innerHTML = '';
+      try {
+        const res = await fetch('/api/workouts');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) {
+          data.forEach(w => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+              <span>
+                <strong>${w.name || 'Workout'}</strong>
+                <small class="ms-2 text-muted">${w.description || ''}</small>
+              </span>
+              <button class="btn btn-danger btn-sm" title="Delete" onclick="deleteWorkout(${w.id})"><i class="bi bi-trash"></i></button>
+            `;
+            list.appendChild(li);
+          });
+        } else {
+          list.innerHTML = '<li class="list-group-item text-muted">No workouts yet.</li>';
+        }
+      } catch (e) {
+        list.innerHTML = '<li class="list-group-item text-danger">Could not load workouts.</li>';
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('workoutName').value.trim();
+      const description = document.getElementById('workoutDesc').value.trim();
+      const duration = parseInt(document.getElementById('workoutDuration').value) || 30;
+      const userId = localStorage.getItem('userId');
+      msg.textContent = '';
+      if (!name) {
+        msg.textContent = 'Workout name required!';
+        msg.className = 'text-danger small mt-2';
+        return;
+      }
+      if (!userId) {
+        msg.textContent = 'Please log in to add workouts!';
+        msg.className = 'text-danger small mt-2';
+        window.location.href = 'profile.html';
+        return;
+      }
+      try {
+        const workoutData = { 
+          name, 
+          description,
+          userId: parseInt(userId),
+          date: new Date().toISOString().split('T')[0],
+          durationMinutes: duration
+        };
+        const res = await fetch('/api/workouts', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(workoutData)
+        });
+        if (!res.ok) throw new Error('Save failed.');
+        form.reset();
+        msg.textContent = 'Workout added!';
+        msg.className = 'text-success small mt-2';
+        loadWorkouts();
+      } catch (err) {
+        msg.textContent = 'Error: ' + err.message;
+        msg.className = 'text-danger small mt-2';
+      }
+    });
+
+    async function deleteWorkout(id) {
+      if (!confirm('Delete this workout?')) return;
+      await fetch('/api/workouts/' + id, { method: 'DELETE' });
+      loadWorkouts();
+    }
+    window.deleteWorkout = deleteWorkout; // so it's accessible in inline onclick
+
+    // Load on start
+    loadWorkouts();
+  </script>
+</body>
+</html>

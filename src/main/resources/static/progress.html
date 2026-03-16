@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>FITTRACK — PROGRESS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="cyberpunk.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* Page-specific styles */
+    .progress-header {
+      font-family: 'Audiowide', monospace;
+      font-weight: 400;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    
+    .progress-subtitle {
+      color: var(--cp-text-dim);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    
+    .progress-card {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+      border: 2px solid var(--cp-neon-cyan);
+      border-radius: 0;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(15px);
+      box-shadow: 
+        0 0 40px rgba(0, 255, 255, 0.2),
+        inset 0 0 0 1px rgba(255, 0, 255, 0.1);
+    }
+    
+    .progress-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan), var(--cp-neon-yellow));
+      animation: cyberpunkGlow 3s ease-in-out infinite;
+    }
+    
+    .progress-card:hover {
+      border-color: var(--cp-neon-pink);
+      box-shadow: 
+        0 0 60px rgba(255, 0, 255, 0.4),
+        inset 0 0 0 1px rgba(0, 255, 255, 0.2);
+      transform: translateY(-8px);
+    }
+    
+    .progress-card:nth-child(1) { animation-delay: 0.6s; }
+    .progress-card:nth-child(2) { animation-delay: 0.8s; }
+    .progress-card:nth-child(3) { animation-delay: 1s; }
+    
+    .progress-card h3 {
+      font-family: 'Audiowide', monospace;
+      font-size: 1.5rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 1.5rem;
+      background: rgba(26, 26, 46, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 0;
+      padding: 1rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-item {
+      background: rgba(26, 26, 46, 0.6);
+      border: 2px solid rgba(0, 255, 255, 0.3);
+      border-radius: 0;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .stat-item:hover::before {
+      left: 100%;
+    }
+    
+    .stat-item:hover {
+      background: rgba(26, 26, 46, 0.8);
+      border-color: var(--cp-neon-cyan);
+      transform: translateY(-4px);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+    }
+    
+    .stat-value {
+      font-family: 'Audiowide', monospace;
+      font-size: 2rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: pulse 2s ease-in-out infinite;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    }
+    
+    .stat-label {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-text-dim);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.5rem;
+    }
+    
+    /* Bootup sequence */
+    .bootup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--cp-bg-darker);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: bootupFadeOut 0.5s ease-out 3s forwards;
+    }
+    
+    .bootup-logo {
+      font-family: 'Audiowide', monospace;
+      font-size: 4rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 50px rgba(0, 255, 255, 0.8);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: bootupGlow 2s ease-in-out infinite;
+    }
+    
+    .bootup-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-neon-cyan);
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      animation: bootupPulse 1.5s ease-in-out infinite;
+    }
+    
+    .bootup-progress {
+      width: 300px;
+      height: 4px;
+      background: rgba(0, 255, 255, 0.2);
+      border-radius: 2px;
+      margin-top: 2rem;
+      overflow: hidden;
+    }
+    
+    .bootup-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      width: 0%;
+      animation: bootupProgress 3s ease-out forwards;
+    }
+    
+    @keyframes bootupGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255, 0, 255, 0.8)); }
+    }
+    
+    @keyframes bootupPulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes bootupProgress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    @keyframes bootupFadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Bootup Sequence -->
+  <div class="bootup-overlay" id="bootupOverlay">
+    <div class="bootup-logo">FITTRACK</div>
+    <div class="bootup-subtitle">FITNESS TRACKING SYSTEM</div>
+    <div class="bootup-progress">
+      <div class="bootup-progress-bar"></div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row g-0">
+      <!-- Sidebar -->
+      <aside class="col-auto sidebar d-flex flex-column gap-3">
+        <div class="brand">
+          <div class="brand-logo">
+            <span>FT</span>
+          </div>
+          <div class="brand-text">
+                        <h1 style="font-size: 1.6rem; white-space: nowrap;">FITTRACK</h1>
+
+            <p>FITNESS TRACKING SYSTEM</p>
+          </div>
+        </div>
+        <nav class="nav flex-column">
+          <a class="nav-link" href="index.html"><i class="bi bi-speedometer2"></i>Dashboard</a>
+          <a class="nav-link" href="workouts.html"><i class="bi bi-bar-chart-line"></i>Workouts</a>
+          <a class="nav-link" href="nutrition.html"><i class="bi bi-basket"></i>Nutrition</a>
+          <a class="nav-link active" href="progress.html"><i class="bi bi-graph-up"></i>Progress</a>
+          <a class="nav-link" href="profile.html"><i class="bi bi-person-circle"></i>Profile</a>
+          <a class="nav-link" href="settings.html"><i class="bi bi-gear"></i>Settings</a>
+          <a class="nav-link" href="details.html"><i class="bi bi-card-text"></i>Details</a>
+        </nav>
+      </aside>
+      
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="progress-card">
+          <h3><i class="bi bi-graph-up me-2"></i>Workout Progress</h3>
+          <p class="text-muted mb-4">Track your fitness journey over time</p>
+          
+          <div class="chart-container">
+            <canvas id="workoutChart"></canvas>
+                </div>
+                </div>
+        
+        <div class="progress-card">
+          <h3><i class="bi bi-calendar-check me-2"></i>Workout Frequency</h3>
+          <p class="text-muted mb-4">Weekly workout activity</p>
+          
+          <div class="chart-container">
+            <canvas id="frequencyChart"></canvas>
+            </div>
+          </div>
+        
+        <div class="progress-card">
+          <h3><i class="bi bi-trophy me-2"></i>Workout Statistics</h3>
+          
+          <div class="stat-grid">
+            <div class="stat-item">
+              <div class="stat-value" id="totalWorkouts">0</div>
+              <div class="stat-label">Total Workouts</div>
+                </div>
+            <div class="stat-item">
+              <div class="stat-value" id="thisWeek">0</div>
+              <div class="stat-label">This Week</div>
+                </div>
+            <div class="stat-item">
+              <div class="stat-value" id="avgDuration">0</div>
+              <div class="stat-label">Avg Duration (min)</div>
+                </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalMinutes">0</div>
+              <div class="stat-label">Total Minutes</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="cyberpunk-effects.js"></script>
+<script>
+  // Bootup sequence
+  window.addEventListener('load', function() {
+    setTimeout(() => {
+      document.getElementById('bootupOverlay').style.display = 'none';
+    }, 3500);
+  });
+
+  const userId = localStorage.getItem('userId');
+
+  if (!userId) {
+    window.location.href = 'profile.html';
+  }
+
+  // Load and display progress data
+  async function loadProgressData() {
+    try {
+      const response = await fetch(`/api/workouts/user/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to load progress data');
+      }
+      const workouts = await response.json();
+      
+      if (workouts && workouts.length > 0) {
+        // Process data for charts
+        const workoutChart = processWorkoutChart(workouts);
+        const frequencyChart = processFrequencyChart(workouts);
+        const stats = calculateStats(workouts);
+        
+        // Update statistics
+        document.getElementById('totalWorkouts').textContent = stats.total;
+        document.getElementById('thisWeek').textContent = stats.thisWeek;
+        document.getElementById('avgDuration').textContent = stats.avgDuration;
+        document.getElementById('totalMinutes').textContent = stats.totalMinutes;
+        
+        // Create charts
+        createWorkoutChart(workoutChart.labels, workoutChart.data);
+        createFrequencyChart(frequencyChart.labels, frequencyChart.data);
+      } else {
+        // Show empty state
+        document.querySelectorAll('.chart-container').forEach(container => {
+          container.innerHTML = '<p class="text-center text-muted">No workout data available yet. Start tracking your workouts!</p>';
+        });
+      }
+    } catch (error) {
+      console.error('Error loading progress data:', error);
+    }
+  }
+
+  function processWorkoutChart(workouts) {
+    // Group workouts by date
+    const grouped = {};
+    workouts.forEach(workout => {
+      const date = new Date(workout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      if (!grouped[date]) {
+        grouped[date] = 0;
+      }
+      grouped[date]++;
+    });
+    
+    const labels = Object.keys(grouped).sort((a, b) => new Date(a) - new Date(b));
+    const data = labels.map(label => grouped[label]);
+    
+    return { labels, data };
+  }
+
+  function processFrequencyChart(workouts) {
+    // Group by week
+    const weeklyData = {};
+    workouts.forEach(workout => {
+      const week = getWeekFromDate(new Date(workout.date));
+      weeklyData[week] = (weeklyData[week] || 0) + 1;
+    });
+    
+    const labels = Object.keys(weeklyData).sort();
+    const data = labels.map(label => weeklyData[label]);
+    
+    return { labels, data };
+  }
+
+  function getWeekFromDate(date) {
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    const days = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000));
+    return `Week ${Math.ceil((days + startOfYear.getDay() + 1) / 7)}`;
+  }
+
+  function calculateStats(workouts) {
+    const total = workouts.length;
+    const thisWeek = workouts.filter(w => {
+      const workoutDate = new Date(w.date);
+      const now = new Date();
+      const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+      return workoutDate >= weekStart;
+    }).length;
+    
+    const totalMinutes = workouts.reduce((sum, w) => sum + (w.durationMinutes || 0), 0);
+    const avgDuration = total > 0 ? Math.round(totalMinutes / total) : 0;
+    
+    return {
+      total,
+      thisWeek,
+      avgDuration,
+      totalMinutes
+    };
+  }
+
+  function createWorkoutChart(labels, data) {
+    const ctx = document.getElementById('workoutChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Workouts',
+          data: data,
+          borderColor: '#00ffff',
+          backgroundColor: 'rgba(0, 255, 255, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBackgroundColor: '#00ffff',
+          pointBorderColor: '#ff00ff',
+          pointBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              color: '#94a3b8'
+            },
+            grid: {
+              color: 'rgba(0, 255, 255, 0.1)'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#94a3b8'
+            },
+            grid: {
+              color: 'rgba(0, 255, 255, 0.1)'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function createFrequencyChart(labels, data) {
+    const ctx = document.getElementById('frequencyChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Workouts per Week',
+          data: data,
+          backgroundColor: 'rgba(255, 0, 255, 0.3)',
+          borderColor: '#ff00ff',
+          borderWidth: 2,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              color: '#94a3b8'
+            },
+            grid: {
+              color: 'rgba(0, 255, 255, 0.1)'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#94a3b8'
+            },
+            grid: {
+              color: 'rgba(0, 255, 255, 0.1)'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  window.onload = loadProgressData;
+</script>
+</body>
+</html>

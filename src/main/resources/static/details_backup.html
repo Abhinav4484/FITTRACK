@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Fit Track — Health Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background: linear-gradient(120deg, #0f1539, #120a46);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      color: #cde6ff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      min-width: 240px;
+      max-width: 260px;
+      background: linear-gradient(180deg, #1e3a8a, #9333ea);
+      color: #fff;
+      height: 100vh;
+      padding: 1.5rem 1.25rem;
+      border-right: 4px solid #ec4899;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .sidebar .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      user-select: none;
+    }
+    .sidebar .brand .logo {
+      width: 44px;
+      height: 44px;
+      background: white;
+      color: #3b82f6;
+      font-weight: 900;
+      font-family: 'Syne', sans-serif;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      user-select: none;
+      text-shadow: 0 0 8px #00afff9f;
+    }
+    .sidebar .brand .name {
+      font-weight: 700;
+      font-size: 1.125rem;
+      text-shadow: 0 0 8px #ec4899cc;
+    }
+    .sidebar .brand .tagline {
+      font-size: 0.8rem;
+      color: #fbcfe8cc;
+    }
+    .nav-link {
+      color: #cde6ffcc;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.48rem 1rem;
+      border-radius: 10px;
+      transition: background-color 0.25s, color 0.25s;
+      user-select: none;
+    }
+    .nav-link i {
+      font-size: 1.3rem;
+    }
+    .nav-link:hover {
+      background-color: #6d28d9;
+      color: #ffffff;
+      text-shadow: 0 0 8px #00d0ffcc;
+    }
+    .nav-link.active {
+      background-color: #ec4899;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 0 10px #ff49c1;
+    }
+    .card {
+      background: #0a1f4c;
+      padding: 2rem;
+      border-radius: 24px;
+      box-shadow: 0 6px 28px 8px #38166d99;
+      max-width: 480px;
+      margin: 3rem auto;
+      color: #b1d4ffcc;
+    }
+    .card h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 1.75rem;
+      color: #58a6ff;
+      text-shadow: 0 0 12px #55aaffcc;
+    }
+    .form-label {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #7fb8ffbb;
+      margin-bottom: 0.5rem;
+      user-select: none;
+    }
+    .form-control,
+    .form-select {
+      background: #12254a;
+      border: 2px solid transparent;
+      border-radius: 18px;
+      padding: 0.8rem 1.2rem;
+      color: #bcd2ff;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 2px 16px #3a6fd042;
+      outline: none;
+      user-select: text;
+    }
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #3891f3;
+      box-shadow: 0 0 20px #3a8fffdb;
+      background-color: #183468;
+      color: #ddefff;
+      user-select: text;
+    }
+    button.btn-primary {
+      background: linear-gradient(90deg,#3891f3 0%,#2854a2 100%);
+      border: none;
+      padding: 0.85rem 2rem;
+      color: #e0f7ff;
+      font-weight: 700;
+      font-size: 1.12rem;
+      border-radius: 26px;
+      box-shadow: 0 0 25px #3a80f5bb;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;
+      width: 100%;
+    }
+    button.btn-primary:hover {
+      background: linear-gradient(90deg,#57a2ff 0%,#4a81d9 100%);
+      box-shadow: 0 0 45px #3b9efdcc;
+      transform: scale(1.05);
+    }
+    button.btn-primary:active {
+      transform: scale(0.98);
+    }
+    #msg {
+      margin-top: 1rem;
+      font-weight: 600;
+      font-style: italic;
+      text-align: center;
+      user-select: none;
+    }
+    #msg.text-success {
+      color: #69f580;
+      text-shadow: 0 0 15px #0c8c24cc;
+    }
+    #msg.text-danger {
+      color: #ff6d6d;
+      text-shadow: 0 0 10px #c81313cc;
+    }
+    /* Responsive */
+    @media (max-width: 720px) {
+      body {
+        flex-direction: column;
+        height: auto;
+      }
+      .sidebar {
+        flex-direction: row;
+        height: auto;
+        max-width: 100%;
+        padding: 1rem;
+        justify-content: space-around;
+        border-right: none;
+        border-bottom: 4px solid #ec4899;
+      }
+      .card {
+        max-width: 100%;
+        margin: 2rem 1rem;
+        border-radius: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <aside class="sidebar d-flex flex-column gap-3">
+      <div class="brand">
+        <div class="logo">FT</div>
+        <div>
+          <div class="fw-bold text-white">Fit Track</div>
+          <div class="muted-sm text-pink-100">Your Fitness Companion</div>
+        </div>
+      </div>
+      <nav class="nav flex-column">
+        <a href="index.html" class="nav-link"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+        <a href="workouts.html" class="nav-link"><i class="bi bi-bar-chart-line me-2"></i>Workouts</a>
+        <a href="nutrition.html" class="nav-link"><i class="bi bi-basket me-2"></i>Nutrition</a>
+        <a href="progress.html" class="nav-link"><i class="bi bi-graph-up me-2"></i>Progress</a>
+        <a href="profile.html" class="nav-link"><i class="bi bi-person-circle me-2"></i>Profile</a>
+        <a href="settings.html" class="nav-link"><i class="bi bi-gear me-2"></i>Settings</a>
+        <a href="details.html" class="nav-link active"><i class="bi bi-clipboard2-heart me-2"></i>Details</a>
+      </nav>
+    </aside>
+
+    <div class="card" role="main">
+      <h2 class="mb-4">Health Details</h2>
+      <form id="healthForm" novalidate>
+        <input type="hidden" id="detailsId" />
+        <div class="mb-3">
+          <label for="heightInput" class="form-label">Height (cm)</label>
+          <input type="number" min="0" step="0.1" class="form-control" id="heightInput" required />
+        </div>
+        <div class="mb-3">
+          <label for="weightInput" class="form-label">Weight (kg)</label>
+          <input type="number" min="0" step="0.1" class="form-control" id="weightInput" required />
+        </div>
+        <div class="mb-3">
+          <label for="ageInput" class="form-label">Age</label>
+          <input type="number" min="0" class="form-control" id="ageInput" />
+        </div>
+        <div class="mb-3">
+          <label for="genderInput" class="form-label">Gender</label>
+          <select id="genderInput" class="form-select">
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Save</button>
+        <div id="msg" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const userId = localStorage.getItem('userId') || 1;
+
+    async function loadDetails() {
+      try {
+        const res = await fetch(`/api/details/${userId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data) {
+            document.getElementById('detailsId').value = data.id || '';
+            document.getElementById('heightInput').value = data.height || '';
+            document.getElementById('weightInput').value = data.weight || '';
+            document.getElementById('ageInput').value = data.age || '';
+            document.getElementById('genderInput').value = data.gender || '';
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load details', err);
+      }
+    }
+
+    document.getElementById('healthForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgDiv = document.getElementById('msg');
+      msgDiv.textContent = '';
+      msgDiv.className = '';
+
+      const id = document.getElementById('detailsId').value;
+      const height = parseFloat(document.getElementById('heightInput').value);
+      const weight = parseFloat(document.getElementById('weightInput').value);
+      const age = parseInt(document.getElementById('ageInput').value);
+      const gender = document.getElementById('genderInput').value;
+
+      const payload = { userId: parseInt(userId), height, weight, age, gender };
+
+      try {
+        let res;
+        if (id) {
+          res = await fetch(`/api/details/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          res = await fetch('/api/details', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
+        if (!res.ok) throw new Error('Failed to save');
+        msgDiv.textContent = 'Details saved! Redirecting to Dashboard...';
+        msgDiv.className = 'text-success';
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+      } catch (err) {
+        msgDiv.textContent = 'Error: ' + err.message;
+        msgDiv.className = 'text-danger';
+      }
+    });
+
+    window.onload = loadDetails;
+  </script>
+</body>
+</html>

@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Fit Track — Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+    
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --secondary: #ec4899;
+      --secondary-light: #f472b6;
+      --accent: #06b6d4;
+      --accent-light: #22d3ee;
+      --success: #10b981;
+      --success-light: #34d399;
+      --warning: #f59e0b;
+      --warning-light: #fbbf24;
+      --danger: #ef4444;
+      --danger-light: #f87171;
+      --purple: #8b5cf6;
+      --purple-light: #a78bfa;
+      --orange: #f97316;
+      --orange-light: #fb923c;
+      
+      --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --surface: rgba(255, 255, 255, 0.95);
+      --surface-hover: rgba(255, 255, 255, 1);
+      --glass: rgba(255, 255, 255, 0.1);
+      --glass-hover: rgba(255, 255, 255, 0.2);
+      
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      --radius: 1rem;
+      --radius-sm: 0.5rem;
+      --radius-lg: 1.5rem;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: all 0.15s ease;
+      --transition-slow: all 0.5s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--background);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+      animation: backgroundFloat 20s ease-in-out infinite;
+    }
+    
+    @keyframes backgroundFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(1deg); }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .sidebar {
+      min-width: 230px; 
+      max-width: 250px;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-primary);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-xl);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      user-select: none;
+      animation: fadeInLeft 0.8s ease-out;
+    }
+    
+    .sidebar a.nav-link { 
+      color: var(--text-secondary);
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sidebar a.nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .sidebar a.nav-link:hover::before {
+      left: 100%;
+    }
+    
+    .sidebar a.nav-link.active, .sidebar a.nav-link:hover {
+      background: var(--glass);
+      color: var(--primary);
+      transform: translateX(8px);
+      box-shadow: var(--shadow-glow);
+    }
+    .profile-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding-left: 250px;
+      animation: fadeInUp 1s ease-out 0.4s both;
+    }
+    
+    .form-card {
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      padding: 2.5rem;
+      min-width: 400px;
+      max-width: 500px;
+      width: 100%;
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      background-size: 200% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+    
+    .form-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .form-label { 
+      color: var(--text-secondary); 
+      font-weight: 600; 
+      letter-spacing: 0.01em;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+      border-radius: var(--radius);
+      background: var(--glass);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      font-weight: 500;
+      padding: 0.875rem 1rem;
+      transition: var(--transition);
+      margin-bottom: 1rem;
+    }
+    
+    .form-control:focus {
+      border: 2px solid var(--primary);
+      background: var(--glass-hover);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-glow);
+      outline: none;
+    }
+    .btn {
+      font-weight: 600;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      padding: 0.875rem 2rem;
+      transition: var(--transition);
+      margin-bottom: 0.75rem;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl), var(--shadow-glow);
+    }
+    
+    .btn-outline-primary {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    
+    .btn-outline-primary:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 2px solid var(--danger);
+    }
+    
+    .btn-outline-danger:hover {
+      background: var(--danger);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary, .btn-info {
+      background: var(--glass);
+      color: var(--text-primary);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-secondary:hover, .btn-info:hover {
+      background: var(--glass-hover);
+      transform: translateY(-2px);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%);
+      color: white;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%);
+      color: white;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+    #profileMessage, #loginMessage, #registerMessage {
+      font-weight: 600;
+      margin-bottom: 0.7rem;
+      margin-top: 0.7rem;
+      min-height: 22px;
+    }
+    
+    /* Main content area - Add left margin to account for fixed sidebar */
+    main, .main-content, .profile-content {
+      margin-left: 250px;
+      padding: 2rem;
+      min-height: 100vh;
+      animation: fadeInUp 1s ease-out 0.4s both;
+      will-change: transform;
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Performance optimizations for 60fps */
+    * {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      perspective: 1000px;
+    }
+    
+    .form-card, .sidebar a, .btn {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+    
+    /* Responsive - mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-width: 100%;
+        max-width: 100%;
+      }
+      
+      main, .main-content, .profile-content {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+    @media(max-width:1100px){
+      .profile-content>div{flex-direction:column;align-items:center;}
+    }
+    @media(max-width:650px){
+      .profile-content {padding-top: 2.7rem;}
+      .form-card{min-width:unset;max-width:97vw;}
+      .sidebar {min-width: 100vw; max-width: 100vw; height: auto; flex-direction: row; border-right:none;border-bottom:4px solid #ec4899;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row g-0">
+      <!-- Sidebar -->
+      <aside class="col-auto sidebar d-flex flex-column gap-3">
+        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:44px;height:44px; background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: var(--shadow-glow);">
+          <span class="fw-bold text-white" style="font-family: 'Poppins', sans-serif; font-size: 1.2rem;">FT</span>
+        </div>
+        <div>
+          <div class="fw-bold" style="font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">FITTRACK</div>
+          <div class="muted-sm" style="color: var(--text-muted); font-size: 0.8rem;">FITNESS TRACKER</div>
+        </div>
+        </div>
+        <nav class="nav flex-column">
+          <a class="nav-link" href="index.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+          <a class="nav-link" href="workouts.html"><i class="bi bi-bar-chart-line me-2"></i>Workouts</a>
+          <a class="nav-link" href="nutrition.html"><i class="bi bi-basket me-2"></i>Nutrition</a>
+          <a class="nav-link" href="progress.html"><i class="bi bi-graph-up me-2"></i>Progress</a>
+          <a class="nav-link active" href="profile.html"><i class="bi bi-person-circle me-2"></i>Profile</a>
+          <a class="nav-link" href="settings.html"><i class="bi bi-gear me-2"></i>Settings</a>
+          <a class="nav-link" href="details.html"><i class="bi bi-card-text me-2"></i>Details</a>
+        </nav>
+      </aside>
+      <!-- Main/Profile/Forms -->
+      <main class="col profile-content">
+        <div style="width:100%;max-width:900px;display:flex;gap:4vw;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+          <!-- Login/Register -->
+          <div id="authView" style="flex:1 1 320px;min-width:300px;max-width:410px;">
+            <div class="form-card mb-4">
+              <div class="form-title text-center mb-4">LOGIN</div>
+              <form id="loginForm">
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input id="loginEmailInput" type="email" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Password</label>
+                  <input id="loginPasswordInput" type="password" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
+                <div class="text-center mt-2">
+                  <a href="#" id="forgotPasswordLink" class="text-decoration-none" style="color: var(--text-secondary); font-size: 0.875rem;">Forgot Password?</a>
+                </div>
+                <div id="loginMessage" class="mt-2"></div>
+              </form>
+            </div>
+            <div class="form-card">
+              <div class="form-title text-center mb-4">REGISTER</div>
+              <form id="registerForm">
+                <div class="mb-3">
+                  <label class="form-label">Username</label>
+                  <input id="regUsernameInput" type="text" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input id="regEmailInput" type="email" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Password</label>
+                  <input id="regPasswordInput" type="password" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Confirm Password</label>
+                  <input id="regConfirmPasswordInput" type="password" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-success w-100 mb-2">Register</button>
+                <div id="registerMessage" class="mt-2"></div>
+              </form>
+            </div>
+          </div>
+          <!-- Profile view (after login) -->
+          <div id="profileView" style="display:none;flex:1 1 420px;max-width:460px;">
+            <div class="form-card mb-4">
+              <div class="form-title mb-3"><i class="bi bi-person-circle me-2"></i>PROFILE</div>
+              <form id="profileForm">
+                <div class="mb-3">
+                  <label class="form-label">Name</label>
+                  <input id="nameInput" type="text" class="form-control" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input id="emailInput" type="email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">New Password</label>
+                  <input id="newPasswordInput" type="password" class="form-control" placeholder="Leave blank to keep current" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Confirm New Password</label>
+                  <input id="confirmNewPasswordInput" type="password" class="form-control" placeholder="Leave blank to keep current" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                <button type="button" class="btn btn-danger w-100" id="deleteBtn">Delete Profile</button>
+                <button type="button" class="btn btn-secondary w-100" id="logoutBtn">Logout</button>
+                <button type="button" class="btn btn-info w-100" onclick="window.location.href='index.html'">Back to Dashboard</button>
+                <div id="profileMessage" class="mt-3"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="forgotPasswordForm">
+            <div class="mb-3">
+              <label for="resetEmail" class="form-label">Email Address</label>
+              <input type="email" class="form-control" id="resetEmail" required placeholder="Enter your email address">
+            </div>
+            <div id="resetMessage" class="mt-2"></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="sendResetEmail">Send Reset Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="resetPasswordModalLabel">Set New Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="resetPasswordForm">
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="newPassword" required minlength="6">
+            </div>
+            <div class="mb-3">
+              <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+              <input type="password" class="form-control" id="confirmNewPassword" required minlength="6">
+            </div>
+            <div id="resetPasswordMessage" class="mt-2"></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="updatePassword">Update Password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+  const userId = localStorage.getItem('userId');
+
+  function checkAuth() {
+    if (userId) {
+      document.getElementById('authView').style.display = 'none';
+      document.getElementById('profileView').style.display = 'block';
+      loadProfile();
+    } else {
+      document.getElementById('authView').style.display = 'block';
+      document.getElementById('profileView').style.display = 'none';
+    }
+  }
+
+  async function loadProfile() {
+    const message = document.getElementById('profileMessage');
+    try {
+      const res = await fetch(`/api/users/${userId}`);
+      if (res.status === 404 || !res.ok) {
+        message.textContent = 'Error loading profile.';
+        message.style.color = 'red';
+        return;
+      }
+      const user = await res.json();
+      document.getElementById('nameInput').value = user.username || '';
+      document.getElementById('emailInput').value = user.email || '';
+    } catch (err) {
+      message.textContent = 'Error: ' + err.message;
+      message.style.color = 'red';
+    }
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmailInput').value.trim();
+    const password = document.getElementById('loginPasswordInput').value.trim();
+    const message = document.getElementById('loginMessage');
+    if (!email || !password) {
+      message.textContent = 'Email and password are required.';
+      message.style.color = 'red';
+      return;
+    }
+    try {
+      const res = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      if (!res.ok) {
+        message.textContent = 'Invalid email or password.';
+        message.style.color = 'red';
+        return;
+      }
+      const user = await res.json();
+      localStorage.setItem('userId', user.id);
+      localStorage.setItem('username', user.username);
+      localStorage.setItem('email', user.email);
+      message.textContent = 'Login successful! Redirecting...';
+      message.style.color = 'green';
+
+      const detailsRes = await fetch(`/api/details/${user.id}`);
+      if (!detailsRes.ok || (await detailsRes.json()) === null) {
+        window.location.href = 'details.html';
+      } else {
+        window.location.href = 'index.html';
+      }
+    } catch (err) {
+      message.textContent = 'Error: ' + err.message;
+      message.style.color = 'red';
+    }
+  });
+
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('regUsernameInput').value.trim();
+    const email = document.getElementById('regEmailInput').value.trim();
+    const password = document.getElementById('regPasswordInput').value.trim();
+    const confirmPassword = document.getElementById('regConfirmPasswordInput').value.trim();
+    const message = document.getElementById('registerMessage');
+    if (!username || !email || !password) {
+      message.textContent = 'All fields are required.';
+      message.style.color = 'red';
+      return;
+    }
+    if (password !== confirmPassword) {
+      message.textContent = 'Passwords do not match.';
+      message.style.color = 'red';
+      return;
+    }
+    if (password.length < 6) {
+      message.textContent = 'Password must be at least 6 characters.';
+      message.style.color = 'red';
+      return;
+    }
+    try {
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+      if (!res.ok) throw new Error('Registration failed');
+      const user = await res.json();
+      localStorage.setItem('userId', user.id);
+      localStorage.setItem('username', user.username);
+      localStorage.setItem('email', user.email);
+      message.textContent = `Account created! Welcome, ${user.username}. Redirecting...`;
+      message.style.color = 'green';
+      setTimeout(() => {
+        window.location.href = 'details.html';
+      }, 1000);
+    } catch (err) {
+      message.textContent = 'Error: ' + err.message;
+      message.style.color = 'red';
+    }
+  });
+
+  document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = document.getElementById('profileMessage');
+    const username = document.getElementById('nameInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const newPassword = document.getElementById('newPasswordInput').value;
+    const confirmNewPassword = document.getElementById('confirmNewPasswordInput').value;
+
+    if (!username || !email) {
+      message.textContent = 'Username and Email are required.';
+      message.style.color = 'red';
+      return;
+    }
+    if (newPassword || confirmNewPassword) {
+      if (newPassword !== confirmNewPassword) {
+        message.textContent = 'Passwords do not match.';
+        message.style.color = 'red';
+        return;
+      }
+      if (newPassword.length < 6) {
+        message.textContent = 'Password must be at least 6 characters.';
+        message.style.color = 'red';
+        return;
+      }
+    }
+    const payload = { username, email };
+    if (newPassword) payload.password = newPassword;
+
+    try {
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      message.textContent = 'Profile updated successfully.';
+      message.style.color = 'green';
+      localStorage.setItem('username', username);
+      document.getElementById('newPasswordInput').value = '';
+      document.getElementById('confirmNewPasswordInput').value = '';
+    } catch (err) {
+      message.textContent = 'Error: ' + err.message;
+      message.style.color = 'red';
+    }
+  });
+
+  document.getElementById('deleteBtn').addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to delete your profile?')) return;
+    try {
+      const res = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      localStorage.clear();
+      window.location.href = 'profile.html';
+    } catch (err) {
+      const message = document.getElementById('profileMessage');
+      message.textContent = 'Error: ' + err.message;
+      message.style.color = 'red';
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    window.location.href = 'logout.html';
+  });
+
+  // Forgot Password functionality
+  document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+    modal.show();
+  });
+
+  document.getElementById('sendResetEmail').addEventListener('click', async () => {
+    const email = document.getElementById('resetEmail').value.trim();
+    const message = document.getElementById('resetMessage');
+    
+    if (!email) {
+      message.textContent = 'Please enter your email address.';
+      message.style.color = 'red';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/users/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      if (res.ok) {
+        message.textContent = 'Password reset link sent to your email!';
+        message.style.color = 'green';
+        setTimeout(() => {
+          bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide();
+        }, 2000);
+      } else {
+        message.textContent = 'Email not found or error sending reset link.';
+        message.style.color = 'red';
+      }
+    } catch (err) {
+      message.textContent = 'Error: ' + err.message;
+      message.style.color = 'red';
+    }
+  });
+
+  document.getElementById('updatePassword').addEventListener('click', async () => {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmNewPassword').value;
+    const message = document.getElementById('resetPasswordMessage');
+
+    if (!newPassword || !confirmPassword) {
+      message.textContent = 'Please fill in all fields.';
+      message.style.color = 'red';
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      message.textContent = 'Passwords do not match.';
+      message.style.color = 'red';
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      message.textContent = 'Password must be at least 6 characters.';
+      message.style.color = 'red';
+      return;
+    }
+
+    try {
+      const resetToken = new URLSearchParams(window.location.search).get('token');
+      const res = await fetch('/api/users/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          token: resetToken,
+          newPassword: newPassword 
+        })
+      });
+
+      if (res.ok) {
+        message.textContent = 'Password updated successfully!';
+        message.style.color = 'green';
+        setTimeout(() => {
+          bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
+          window.location.href = 'profile.html';
+        }, 2000);
+      } else {
+        message.textContent = 'Invalid or expired reset token.';
+        message.style.color = 'red';
+      }
+    } catch (err) {
+      message.textContent = 'Error: ' + err.message;
+      message.style.color = 'red';
+    }
+  });
+
+  // Check for reset token in URL
+  window.addEventListener('load', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetToken = urlParams.get('token');
+    if (resetToken) {
+      const modal = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
+      modal.show();
+    }
+  });
+
+  window.onload = checkAuth;
+</script>
+</body>
+</html>

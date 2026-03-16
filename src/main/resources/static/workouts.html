@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>FITTRACK — WORKOUTS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="cyberpunk.css" rel="stylesheet">
+  <style>
+    /* Page-specific styles */
+    .workout-header {
+      font-family: 'Audiowide', monospace;
+      font-weight: 400;
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      word-wrap: break-word;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+    }
+    
+    .workout-subtitle {
+      color: var(--cp-text-dim);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    
+    .workout-card {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+      border: 2px solid var(--cp-neon-cyan);
+      border-radius: 0;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(15px);
+      box-shadow: 
+        0 0 40px rgba(0, 255, 255, 0.2),
+        inset 0 0 0 1px rgba(255, 0, 255, 0.1);
+    }
+    
+    .workout-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan), var(--cp-neon-yellow));
+      animation: cyberpunkGlow 3s ease-in-out infinite;
+    }
+    
+    .workout-card:hover {
+      border-color: var(--cp-neon-pink);
+      box-shadow: 
+        0 0 60px rgba(255, 0, 255, 0.4),
+        inset 0 0 0 1px rgba(0, 255, 255, 0.2);
+      transform: translateY(-8px);
+    }
+    
+    .section-title {
+      font-family: 'Audiowide', monospace;
+      font-size: 1.2rem;
+      color: var(--cp-neon-cyan);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    }
+    
+    .workout-list-item {
+      background: rgba(26, 26, 46, 0.6);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 0;
+      color: var(--cp-text-main);
+      margin-bottom: 0.75rem;
+      padding: 1.25rem;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .workout-list-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .workout-list-item:hover::before {
+      left: 100%;
+    }
+    
+    .workout-list-item:hover {
+      background: rgba(26, 26, 46, 0.8);
+      border-color: var(--cp-neon-cyan);
+      transform: translateX(8px);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+    }
+    
+    .workout-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      color: var(--cp-neon-cyan);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
+    
+    .workout-desc {
+      color: var(--cp-text-dim);
+      font-size: 0.9rem;
+      margin-left: 0.5rem;
+    }
+    
+    .form-label {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-neon-cyan);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+      background: rgba(26, 26, 46, 0.7);
+      border: 2px solid rgba(0, 255, 255, 0.3);
+      border-radius: 0;
+      padding: 1rem 1.25rem;
+      color: var(--cp-text-main);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(10px);
+    }
+    
+    .form-control:focus {
+      border-color: var(--cp-neon-cyan);
+      background: rgba(26, 26, 46, 0.9);
+      outline: none;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+      color: var(--cp-text-main);
+    }
+    
+    .form-control::placeholder {
+      color: var(--cp-text-dim);
+      opacity: 0.7;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      border: 2px solid transparent;
+      color: var(--cp-bg-dark);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      border-radius: 0;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--cp-neon-cyan), var(--cp-neon-pink));
+      box-shadow: 0 0 50px rgba(255, 0, 255, 0.6);
+      transform: translateY(-3px);
+    }
+    
+    .btn-danger {
+      background: transparent;
+      border: 2px solid var(--cp-neon-red);
+      color: var(--cp-neon-red);
+      border-radius: 0;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 0 20px rgba(255, 0, 102, 0.3);
+    }
+    
+    .btn-danger:hover {
+      background: var(--cp-neon-red);
+      color: var(--cp-bg-dark);
+      box-shadow: 0 0 40px rgba(255, 0, 102, 0.6);
+      transform: translateY(-2px);
+    }
+    
+    /* Bootup sequence */
+    .bootup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--cp-bg-darker);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: bootupFadeOut 0.5s ease-out 3s forwards;
+    }
+    
+    .bootup-logo {
+      font-family: 'Audiowide', monospace;
+      font-size: 4rem;
+      font-weight: 400;
+      background: linear-gradient(135deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 50px rgba(0, 255, 255, 0.8);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: bootupGlow 2s ease-in-out infinite;
+    }
+    
+    .bootup-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--cp-neon-cyan);
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      animation: bootupPulse 1.5s ease-in-out infinite;
+    }
+    
+    .bootup-progress {
+      width: 300px;
+      height: 4px;
+      background: rgba(0, 255, 255, 0.2);
+      border-radius: 2px;
+      margin-top: 2rem;
+      overflow: hidden;
+    }
+    
+    .bootup-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cp-neon-pink), var(--cp-neon-cyan));
+      width: 0%;
+      animation: bootupProgress 3s ease-out forwards;
+    }
+    
+    @keyframes bootupGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255, 0, 255, 0.8)); }
+    }
+    
+    @keyframes bootupPulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes bootupProgress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    @keyframes bootupFadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Bootup Sequence -->
+  <div class="bootup-overlay" id="bootupOverlay">
+    <div class="bootup-logo">FITTRACK</div>
+    <div class="bootup-subtitle">FITNESS TRACKING SYSTEM</div>
+    <div class="bootup-progress">
+      <div class="bootup-progress-bar"></div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row g-0">
+      <!-- Sidebar -->
+      <aside class="col-auto sidebar d-flex flex-column gap-3">
+        <div class="brand">
+          <div class="brand-logo">
+            <span>FT</span>
+          </div>
+          <div class="brand-text">
+            <h1 style="font-size: 1.6rem; white-space: nowrap;">FITTRACK</h1>
+            <p>FITNESS TRACKING SYSTEM</p>
+          </div>
+        </div>
+        <nav class="nav flex-column">
+          <a class="nav-link" href="index.html"><i class="bi bi-speedometer2"></i>Dashboard</a>
+          <a class="nav-link active" href="workouts.html"><i class="bi bi-bar-chart-line"></i>Workouts</a>
+          <a class="nav-link" href="nutrition.html"><i class="bi bi-basket"></i>Nutrition</a>
+          <a class="nav-link" href="progress.html"><i class="bi bi-graph-up"></i>Progress</a>
+          <a class="nav-link" href="profile.html"><i class="bi bi-person-circle"></i>Profile</a>
+          <a class="nav-link" href="settings.html"><i class="bi bi-gear"></i>Settings</a>
+          <a class="nav-link" href="details.html"><i class="bi bi-card-text"></i>Details</a>
+        </nav>
+      </aside>
+
+      <main class="col px-4 py-4" style="padding-bottom: 4rem;">
+        <header class="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <h2 class="workout-header">WORKOUTS</h2>
+            <p class="workout-subtitle">Manage your training sessions</p>
+          </div>
+        </header>
+        
+        <div class="workout-card mb-4">
+          <div class="mb-3">
+            <h5 class="section-title">
+              <i class="bi bi-plus-circle me-2"></i>ADD NEW WORKOUT
+            </h5>
+          </div>
+          <form id="workoutForm" class="mb-3">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Workout Name</label>
+                <input id="workoutName" class="form-control" placeholder="e.g., Morning Cardio" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Description</label>
+                <input id="workoutDesc" class="form-control" placeholder="Optional details">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Duration (minutes)</label>
+                <input id="workoutDuration" type="number" class="form-control" placeholder="e.g., 30" min="1" value="30">
+              </div>
+              <div class="col-12">
+                <button class="btn btn-primary w-100" type="submit">
+                  <i class="bi bi-plus-lg me-2"></i>ADD WORKOUT
+                </button>
+              </div>
+            </div>
+            <div id="workoutMsg" class="mt-3 small"></div>
+          </form>
+          
+          <div class="mt-4">
+            <h5 class="section-title">
+              <i class="bi bi-list-ul me-2"></i>YOUR WORKOUTS
+            </h5>
+            <ul class="list-group" id="workoutList"></ul>
+          </div>
+        </div>       
+      </main>
+    </div>
+  </div>
+
+  <script src="cyberpunk-effects.js"></script>
+  <script>
+    // Bootup sequence
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        document.getElementById('bootupOverlay').style.display = 'none';
+      }, 3500);
+    });
+
+    // Highlight sidebar
+    const currentPage = window.location.pathname.split("/").pop() || 'index.html';
+    document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+      if (link.getAttribute("href") === currentPage) link.classList.add("active");
+    });
+
+    // JS for saving and loading workouts
+    const form = document.getElementById('workoutForm');
+    const list = document.getElementById('workoutList');
+    const msg = document.getElementById('workoutMsg');
+
+    async function loadWorkouts() {
+      list.innerHTML = '';
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        list.innerHTML = '<li class="workout-list-item text-warning">Please log in.</li>';
+        return;
+      }
+      try {
+        const res = await fetch(`/api/workouts/user/${userId}`);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) {
+          data.forEach(w => {
+            const li = document.createElement('li');
+            li.className = 'workout-list-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+              <span>
+                <span class="workout-name">${w.name || 'Workout'}</span>
+                <span class="workout-desc">${w.description || ''}</span>
+              </span>
+              <button class="btn btn-danger btn-sm" title="Delete" onclick="deleteWorkout(${w.id})"><i class="bi bi-trash"></i></button>
+            `;
+            list.appendChild(li);
+          });
+        } else {
+          list.innerHTML = '<li class="workout-list-item text-muted">No workouts yet.</li>';
+        }
+      } catch (e) {
+        list.innerHTML = '<li class="workout-list-item text-danger">Could not load workouts.</li>';
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('workoutName').value.trim();
+      const description = document.getElementById('workoutDesc').value.trim();
+      const duration = parseInt(document.getElementById('workoutDuration').value) || 30;
+      const userId = localStorage.getItem('userId');
+      msg.textContent = '';
+      if (!name) {
+        msg.textContent = 'Workout name required!';
+        msg.className = 'text-danger small mt-2';
+        return;
+      }
+      if (!userId) {
+        msg.textContent = 'Please log in to add workouts!';
+        msg.className = 'text-danger small mt-2';
+        window.location.href = 'profile.html';
+        return;
+      }
+      try {
+        const workoutData = { 
+          name, 
+          description,
+          userId: parseInt(userId),
+          date: new Date().toISOString().split('T')[0],
+          durationMinutes: duration
+        };
+        const res = await fetch('/api/workouts', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(workoutData)
+        });
+        if (!res.ok) throw new Error('Save failed.');
+        form.reset();
+        msg.textContent = 'Workout added!';
+        msg.className = 'text-success small mt-2';
+        loadWorkouts();
+      } catch (err) {
+        msg.textContent = 'Error: ' + err.message;
+        msg.className = 'text-danger small mt-2';
+      }
+    });
+
+    async function deleteWorkout(id) {
+      if (!confirm('Delete this workout?')) return;
+      await fetch('/api/workouts/' + id, { method: 'DELETE' });
+      loadWorkouts();
+    }
+    window.deleteWorkout = deleteWorkout;
+
+    // Load on start
+    loadWorkouts();
+  </script>
+</body>
+</html>
