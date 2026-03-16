@@ -1,176 +1,122 @@
-# Fit Track UI Transformation - Implementation Guide
+# UI Transformation Guide
 
-## ✅ What I've Done
+This document covers the frontend structure, theming system, and how to customize the UI.
 
-### 1. **Vibrant Design System** ✨
-- Created a modern, minimal design with colorful gradients
-- Applied Poppins font for headings and Inter for body text
-- Implemented glassmorphism effects throughout
-- Added smooth animations (fadeInUp, pulse, shimmer)
+## Overview
 
-### 2. **All HTML Pages Transformed** 🎨
-- ✅ **index.html (Dashboard)** - Vibrant stats cards with animations
-- ✅ **profile.html** - Clean form design with gradient accents
-- ✅ **workouts.html** - Interactive workout cards
-- ✅ **nutrition.html** - Beautiful meal cards with staggered animations
-- ✅ **settings.html** - Modern settings panel
-- ✅ **progress.html** - NEW! Complete with charts and workout data visualization
+The frontend uses a custom CSS/JS system built on top of Bootstrap 5. All cyberpunk-style visuals are handled through `cyberpunk.css` and `cyberpunk-effects.js`.
 
-### 3. **Backend API Enhancements** 🔧
-- ✅ Added `/api/workouts/user/{userId}` endpoint to WorkoutController
-- ✅ Added `findByUserId()` method to WorkoutRepository
-- ✅ Enhanced Workout model with userId, date, and durationMinutes fields
-- ✅ Updated workouts.html to send userId and date when creating workouts
+## File Structure
 
-### 4. **Progress Page Features** 📊
-- Line chart showing workout frequency over time
-- Bar chart showing weekly workout frequency
-- Live statistics: Total Workouts, This Week, Avg Duration, Total Minutes
-- Beautiful glass-card design with animated gradients
-- Responsive layout that works on all devices
-
-## 🎯 Key Features
-
-### **Color Palette**
-- Primary: `#6366f1` (Indigo)
-- Secondary: `#ec4899` (Pink)
-- Accent: `#06b6d4` (Cyan)
-- Success: `#10b981` (Green)
-- Warning: `#f59e0b` (Orange)
-- Danger: `#ef4444` (Red)
-
-### **Animations**
-- `backgroundFloat` - Gentle background movement
-- `fadeInUp` - Elements slide up and fade in
-- `fadeInLeft` - Sidebar slides in from left
-- `pulse` - Pulse effect for stats
-- `shimmer` - Animated gradient on cards
-
-### **Glassmorphism**
-- Translucent cards with `rgba(255, 255, 255, 0.95)` background
-- Backdrop blur for depth
-- Subtle borders with `rgba(255, 255, 255, 0.2)`
-- Elevated shadows for depth
-
-## 🔧 Database Setup
-
-### Migration Script (migration.sql)
-If you need to add the new columns to your existing workouts table:
-```sql
-ALTER TABLE workouts ADD COLUMN IF NOT EXISTS user_id BIGINT;
-ALTER TABLE workouts ADD COLUMN IF NOT EXISTS date DATE;
-ALTER TABLE workouts ADD COLUMN IF NOT EXISTS duration_minutes INT;
+```
+src/main/resources/static/
+├── cyberpunk.css           # All custom styles and theme variables
+├── cyberpunk-effects.js    # Animations and interactive effects
+├── index.html              # Landing / home page
+├── login.html              # Login page
+├── dashboard.html          # Main dashboard
+├── workouts.html           # Workout management
+├── progress.html           # Progress charts
+├── nutrition.html          # Nutrition page
+├── profile.html            # User profile
+├── settings.html           # App settings
+├── about.html              # About page
+└── contact.html            # Contact page
 ```
 
-### Database Configuration
-The application uses:
-- **Database**: MySQL
-- **Host**: localhost:3306
-- **Database Name**: fittrackdb
-- **Auto Migration**: Enabled (`spring.jpa.hibernate.ddl-auto=update`)
+## Theming
 
-## 📦 Dependencies Added
-- Chart.js 4.4.0 for progress page charts
-- Google Fonts (Poppins & Inter)
-- Bootstrap 5.3.2
-- Bootstrap Icons 1.11.3
+### CSS Variables
 
-## 🚀 How to Run
+All colors are defined as CSS variables in `cyberpunk.css`. To change the theme, update these variables:
 
-1. **Update Database** (if needed):
-   ```bash
-   mysql -u root -p fittrackdb < migration.sql
+```css
+:root {
+  --primary-color: #00f5ff;
+  --secondary-color: #ff00ff;
+  --accent-color: #ffff00;
+  --bg-color: #0a0a0f;
+  --card-bg: #12121a;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0b0;
+}
+```
+
+### Available Themes
+
+| Theme | Primary | Secondary |
+|---|---|---|
+| Default | Cyan `#00f5ff` | Magenta `#ff00ff` |
+| Neon Blue | Blue `#0066ff` | Cyan `#00ccff` |
+| Matrix Green | Green `#00ff41` | Dark Green `#008f11` |
+
+Themes are switched dynamically via JavaScript and saved to `localStorage`.
+
+## Adding a New Page
+
+1. Create your HTML file in `src/main/resources/static/`
+2. Include the required CSS and JS at the top:
+   ```html
+   <link rel="stylesheet" href="cyberpunk.css">
+   <script src="cyberpunk-effects.js" defer></script>
    ```
+3. Add a route in the appropriate controller if the page needs backend data
 
-2. **Build the Project**:
-   ```bash
-   mvn clean install
-   ```
+## Key Components
 
-3. **Run the Application**:
-   ```bash
-   ./mvnw spring-boot:run
-   # or on Windows
-   mvnw.cmd spring-boot:run
-   ```
+### Sidebar Navigation
+Defined in each HTML file. Active state is set via JavaScript based on the current page.
 
-4. **Access the App**:
-   - Open: `http://localhost:8080`
-   - Navigate to the vibrant UI pages
+### Cards
+Use the `.cyber-card` class for the standard card style used across the app.
 
-## 📱 Pages Overview
+```html
+<div class="cyber-card">
+  <h3>Card Title</h3>
+  <p>Card content here</p>
+</div>
+```
 
-1. **Dashboard** (`index.html`) - Overview stats with animated cards
-2. **Profile** (`profile.html`) - Login/Register/Profile management
-3. **Workouts** (`workouts.html`) - Add and manage workout routines
-4. **Nutrition** (`nutrition.html`) - Track nutrition information
-5. **Settings** (`settings.html`) - Application settings
-6. **Progress** (`progress.html`) - **NEW!** Visual charts and workout statistics
+### Buttons
+```html
+<button class="btn cyber-btn">Primary Action</button>
+<button class="btn cyber-btn-outline">Secondary Action</button>
+```
 
-## 🔍 What Works
+### Charts
+Charts are rendered using Chart.js. Data is fetched from the REST API and passed into the chart config.
 
-✅ Backend SQL compatibility - All changes are backward compatible
-✅ Chart.js integration for progress page
-✅ Responsive design on all screen sizes
-✅ Smooth animations and transitions
-✅ User authentication flow
-✅ CRUD operations for workouts
+```javascript
+const ctx = document.getElementById('myChart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: { ... },
+  options: { ... }
+});
+```
 
-## 🎨 Design Philosophy
+## Animations
 
-- **Minimal but Colorful**: Clean layout with vibrant accent colors
-- **Consistent Branding**: Unified sidebar design across all pages
-- **Accessible**: Good contrast and readable text
-- **Performance**: Smooth 60fps animations with CSS transforms
-- **Modern**: Glassmorphism, gradients, and micro-interactions
+All animations are defined in `cyberpunk-effects.js`. Key effects:
 
-## 💡 Key Improvements
+| Effect | Trigger | Function |
+|---|---|---|
+| Particle explosion | Button click | `createParticles(x, y)` |
+| Glitch text | Hover | `glitchEffect(element)` |
+| Matrix rain | Page load | `initMatrixRain()` |
+| Bootup sequence | First load | `runBootSequence()` |
 
-1. **Visual Interest**: From boring dark theme to vibrant, colorful interface
-2. **Better UX**: Hover effects, animations, and feedback
-3. **Data Visualization**: Progress page now shows actionable insights
-4. **Consistency**: All pages share the same design language
-5. **Performance**: Lightweight animations that don't impact performance
+To disable any effect, comment out its initializer in `cyberpunk-effects.js`.
 
-## 🐛 Known Issues & Solutions
+## Performance Notes
 
-### Issue: Database Columns Missing
-**Solution**: Run the `migration.sql` script or let Hibernate auto-update
+- Animations use `transform` and `opacity` only to stay on the GPU compositor thread
+- `requestAnimationFrame` is used for all JS-driven animations
+- Event listeners are cleaned up on page unload to prevent memory leaks
+- Matrix rain canvas is paused when the tab is not visible
 
-### Issue: Backend Not Working
-**Solution**: Ensure MySQL is running and credentials are correct in `application.properties`
+## Customization Tips
 
-### Issue: Charts Not Showing
-**Solution**: Make sure you have workout data with userId, date, and durationMinutes
-
-## 📊 Progress Page Features
-
-The new progress.html includes:
-- **Line Chart**: Shows workout trends over time
-- **Bar Chart**: Weekly workout frequency
-- **Live Stats**: Total workouts, this week's count, average duration
-- **Empty State**: Friendly message when no data exists
-- **Auto Refresh**: Data loads automatically on page load
-
-## 🎉 Result
-
-Your Fit Track application now has:
-- A modern, vibrant, and engaging UI
-- Smooth animations and micro-interactions
-- Beautiful data visualizations
-- Full backend compatibility
-- Professional-grade design
-- Excellent user experience
-
-All SQL operations will work fine because I only:
-1. Added new optional columns to the model
-2. Created new query methods in repositories
-3. Added new API endpoints
-4. Enhanced the frontend to send more data
-
-No existing functionality was broken! 🚀
-
-
-
-
-
+- To adjust animation speed, change the `duration` values in `cyberpunk.css` keyframes
+- To disable the bootup sequence, remove the `runBootSequence()` call in `index.html`
+- To add a new theme, define a new set of CSS variables and add a toggle button in `settings.html`
